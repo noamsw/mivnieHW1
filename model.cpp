@@ -7,7 +7,7 @@ Model::Model(int type, int model):type(type),model(model){};
 void Model::sold()
 {
     grade = grade+10;
-    sold = sold+1;
+    numSold = numSold+1;
 }
 
 // updates grade when a model recieves a complaint
