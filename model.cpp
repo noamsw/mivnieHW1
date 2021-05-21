@@ -14,7 +14,7 @@ void Model::sold()
 void Model::complaint(int numMonths)
 {
     int lowered = 100/numMonths;
-    grade = grade - lowered
+    grade = grade - lowered;
 }
 
 // comparing operator, returns true if equal
@@ -59,5 +59,5 @@ bool Model::operator>(const Model& other)
 {
     // check if the model is smaller
     // if not, it is larger as there are no two different models that are equal
-    return !(this < other);
+    return !(*this < other);
 }

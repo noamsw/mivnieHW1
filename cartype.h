@@ -26,6 +26,6 @@ private:
     // in O(n), by using a sorted array
     bool arrToTree(int arr[], int start, int end);
 
-}
+};
 
 #endif
