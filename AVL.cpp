@@ -571,16 +571,26 @@ void AVLTree<T>::setRoot(Node *n) {
 	root->removeParent();
 }
 
+
+
 //return lowest value, can only be used on a non empty tree
 template<typename T>
-T AVLTree<T>::getLowest(){
-	return lowest->getData();
+T AVLTree<T>::getLowestValue(){
+	if(lowest!=nullptr)
+		return lowest->getData();
 }
 
 //return highest value can only be used on a non empty tree
 template<typename T>
-T AVLTree<T>::getHighest(){
-	return highest->getData();
+T AVLTree<T>::getHighestValue(){
+	if(highest!=nullptr)
+		return highest->getData();
+}
+
+// returns a pointer to the node woth the highest value
+template<typename T>
+AVLTree<T>::Node* AVLTree<T>::getHighest(){
+	return highest;
 }
 
 //print the tree
