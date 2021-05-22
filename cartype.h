@@ -6,9 +6,9 @@
 
 class CarType
 {
-    AVLTree<Model>* models;
+    AVLTree<Model>* models;//is this supposed to be a pointer??
     int type;
-    Node* mostSold;
+    AVLTree<Model>::Node* mostSold;
 public:
     // constructor
     CarType(int type, int numOfModels);
