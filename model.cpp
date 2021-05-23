@@ -3,12 +3,8 @@
 // constuctor for Model. grade is initialized to 0 
 Model::Model(int type, int model):type(type),model(model){};
 
-// updates grade when a model is sold
-void Model::sold()
-{
-    grade = grade+10;
-    numSold = numSold+1;
-}
+// constuctor for Model. 
+Model::Model(int type, int model, int grade, int numSold):type(type),model(model), grade(grade), numSold(numSold){};
 
 // updates grade when a model recieves a complaint
 void Model::complaint(int numMonths)

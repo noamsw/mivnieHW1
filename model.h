@@ -11,7 +11,7 @@ private:
     int numSold=0;
 public:
     Model(int type, int model);
-    void sold();
+    Model(int type, int model, int grade, int numSold);
     void complaint(int numMonths);
     bool operator==(const Model& other);
     bool operator>(const Model& other);

@@ -13,14 +13,15 @@ public:
     // constructor
     CarType(int type, int numOfModels);
     ~CarType();
-    // method to sell a specific model in cartype
-    bool sellModel(int model);
     // returns the model number of the best seller
     int getBestSeller();
     // comparing method between to cartypes
     // detertmined by typeid
     bool operator<(const CarType& cartype);
     bool operator>(const CarType& cartype);
+    bool operator==(const CarType& cartype);
+    void* addModel(int model_num, int grade, int numSold);
+    void* removeModel(int model_num);
 private:
     // function used to initialize models tree
     // in O(n), by using a sorted array

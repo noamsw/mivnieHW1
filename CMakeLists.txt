@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19.3)
+cmake_minimum_required(VERSION 3.19.0)
 project(examstudy VERSION 0.1.0 LANGUAGES CXX)
 set(MTM_FLAGS_DEBUG "-std=c99 --pedantic-errors -Wall -Werror")
 set(MTM_FLAGS_RELEASE "${MTM_FLAGS_DEBUG} -DNDEBUG")
