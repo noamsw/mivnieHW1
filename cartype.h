@@ -21,10 +21,11 @@ public:
     // detertmined by typeid
     bool operator<(const CarType& cartype);
     bool operator>(const CarType& cartype);
+    bool operator==(const CarType& cartype);
 private:
     // function used to initialize models tree
     // in O(n), by using a sorted array
-    bool arrToTree(int arr[], int start, int end);
+    Node* arrToTree(int arr[], int start, int end);
 
 };
 
