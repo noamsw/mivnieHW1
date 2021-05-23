@@ -589,7 +589,7 @@ T AVLTree<T>::getHighestValue(){
 
 // returns a pointer to the node woth the highest value
 template<typename T>
-AVLTree<T>::Node* AVLTree<T>::getHighest(){
+typename AVLTree<T>::Node* AVLTree<T>::getHighest(){
 	return highest;
 }
 
@@ -669,6 +669,98 @@ int AVLTree<T>::spacing(int level) {
   return result;
 }
 
+
+
+template<typename T>
+typename AVLTree<T>::Node* AVLTree<T>::arrToNodesTree(T arr[], int start, int end)
+{
+    // Base Case
+    if (start > end) 
+    return NULL; 
+
+    // Get the middle element and make it root
+    int mid = (start + end)/2; 
+	Node* node = new Node(arr[mid]);
+
+	//Recursively construct the left subtree and make it left child of root
+	node->left_child = arrToNodesTree(arr, start, mid-1);
+
+	// Recursively construct the right subtree and make it right child of root
+	node->right_child = arrToNodesTree(arr, mid+1, end);
+
+	return node;
+} 
+
+
+template<typename T>
+int AVLTree<T>::setNodesHeight(AVLTree<T>::Node* node)
+{
+	if (node->getLeftChild()==nullptr && node->getRightChild()==nullptr)
+	{
+		node->height=0;
+		return 0;
+	}
+	node->height= 1+std::max(setNodesHeight(node->getLeftChild()), setNodesHeight(node->getRightChild()));
+	return node->height;
+}
+
+template<typename T>
+void AVLTree<T>::setNodesParent(AVLTree<T>::Node* node)
+{
+	if(node->getLeftChild()==nullptr && node->getRightChild()==nullptr)
+	{
+		return;
+	}
+
+	if (node->getLeftChild() != nullptr)
+	{
+		node->getLeftChild()->parent= node;
+	}
+
+	if (node->getRightChild() != nullptr)
+	{
+		node->getRightChild()->parent= node;
+	}	
+
+	setNodesParent(node->getLeftChild());
+	setNodesParent(node->getRightChild());
+	return;
+}
+
+/*
+// the function creates an AVLTree from sorted array
+template<typename T>
+AVLTree<T> arrToAVLTree(T arr[], int start, int end)
+{ 
+	//turns the sorted array to linked nodes
+	AVLTree<T>::arrToNodesTree(arr, start, end);
+
+	//seting the heights and the parents of the nodes
+
+
+
+	//should update: 
+	//for each node: parent and height
+	//for the tree: lowest, higest and root
+
+
+	AVLTree<T> models_tree = new AVLTree<T>();
+
+}
+*/
+
+int main()
+{
+	int arr[] = {0, 1, 2, 3, 4, 5};
+	AVLTree<int>* tree = new AVLTree<int>();
+	AVLTree<int>::Node* node = tree->arrToNodesTree(arr, 0, 6);
+	std::cout<< AVLTree<int>::setNodesHeight(node);
+	AVLTree<int>::setNodesParent(node);
+	return 0;
+}
+
+
+/*
 int main() {
 
   // Allocate an array to keep track of the data we
@@ -689,6 +781,7 @@ int main() {
 	tree->print();
   } // for
 
+
   // Remove each of the numbers by displaying the
   // number being removed, performing the removal,
   // and displaying the current state of the tree.
@@ -699,3 +792,4 @@ int main() {
   } // for
   return 0;
 }
+*/

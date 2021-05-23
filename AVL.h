@@ -11,6 +11,7 @@ class AVLTree
 public:
     class Node
     {
+		public: //was in line 22
         //data, templated
         T data;
         Node *right_child;
@@ -18,7 +19,7 @@ public:
         Node *parent;
 		//height from bottom of tree
         int height;
-    public:
+		// public was here
     	//default constructor
     	Node();
 		// Constructor initializing the data.
@@ -77,6 +78,17 @@ public:
   	bool remove(const T& t);
 	// returns a pointer to highest node
   	void print();
+	//turns sorted array of <T> elements to a Nodes Tree
+	static AVLTree<T>::Node* arrToNodesTree(T arr[], int start, int end);
+	//setting the node's height
+	static int setNodesHeight(AVLTree<T>::Node* node);
+	//setting the node's parent
+	static void setNodesParent(AVLTree<T>::Node* node);
+	 
+
+	//turns sorted array of <T> elements to an AVLTree
+	AVLTree<T> arrToAVLTree(T arr[], int start, int end);
+
 private:
   	// Balance the tree
 	void balanceAtNode(Node *n);

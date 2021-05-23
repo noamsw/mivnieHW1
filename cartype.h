@@ -22,11 +22,6 @@ public:
     bool operator==(const CarType& cartype);
     void* addModel(int model_num, int grade, int numSold);
     void* removeModel(int model_num);
-private:
-    // function used to initialize models tree
-    // in O(n), by using a sorted array
-    bool arrToTree(int arr[], int start, int end);
-
 };
 
 #endif
