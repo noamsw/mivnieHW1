@@ -79,8 +79,15 @@ bool CarType::arrToTree(int arr[], int start, int end)
     //set the root of the tree
     if(start == 0 & end == (int)sizeof(arr))
     {
+
         //add the Node to the models tree
         this->models->insert(model_to_add);
+        sold->data->sold();
+        //check if we must update mostSold
+        if(sold->data->numSold > mostSold->data->numSold)
+            mostSold=sold;
+        return true;
+
     }
 
     //recursivly add left son then right son
