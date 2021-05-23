@@ -54,7 +54,6 @@ private:
   	Node* lowest;
   	//a pointer to the node with the highest value
   	Node* highest;
-  	//add pointer to lowest node and highest node
 public:
   	//default constructor for empty tree
   	AVLTree();
@@ -67,11 +66,16 @@ public:
   	//std::exception insert(const T& t);
   	bool insert(const T& t);
   	//returns lowest value
-  	T getLowest();
+  	T getLowestValue();
   	//returns highest value
-  	T getHighest();
+  	T getHighestValue();
+	// return pointer to node with lowest value
+	// T getLowest();
+  	//returns pointer to node with highest value
+  	AVLTree<T>::Node* getHighest();
   	//std::exception remove(const T& t);
   	bool remove(const T& t);
+	// returns a pointer to highest node
   	void print();
 private:
   	// Balance the tree

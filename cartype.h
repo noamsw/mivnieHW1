@@ -6,15 +6,13 @@
 
 class CarType
 {
-    AVLTree<Model>* models;
+    AVLTree<Model>* models;//is this supposed to be a pointer??
     int type;
-    Node* mostSold;
+    AVLTree<Model>::Node* mostSold;
 public:
     // constructor
     CarType(int type, int numOfModels);
     ~CarType();
-    // method to sell a specific model in cartype
-    bool sellModel(int model);
     // returns the model number of the best seller
     int getBestSeller();
     // comparing method between to cartypes
@@ -22,10 +20,12 @@ public:
     bool operator<(const CarType& cartype);
     bool operator>(const CarType& cartype);
     bool operator==(const CarType& cartype);
+    void* addModel(int model_num, int grade, int numSold);
+    void* removeModel(int model_num);
 private:
     // function used to initialize models tree
     // in O(n), by using a sorted array
-    Node* arrToTree(int arr[], int start, int end);
+    bool arrToTree(int arr[], int start, int end);
 
 };
 
