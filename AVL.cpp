@@ -67,19 +67,19 @@ int AVLTree<T>::Node::getHeight() {
 
 // Get the left subtree.
 template<typename T>
-typename AVLTree<T>::Node *AVLTree<T>::Node::getLeftChild() {
+typename AVLTree<T>::Node* AVLTree<T>::Node::getLeftChild() {
   return left_child;
 }
 
 // Get the right subtree.
 template<typename T>
-typename AVLTree<T>::Node *AVLTree<T>::Node::getRightChild() {
+typename AVLTree<T>::Node* AVLTree<T>::Node::getRightChild() {
   return right_child;
 }
 
 // Get the node's parent.
 template<typename T>
-typename AVLTree<T>::Node *AVLTree<T>::Node::getParent() {
+typename AVLTree<T>::Node* AVLTree<T>::Node::getParent() {
   return parent;
 }
 
@@ -789,7 +789,7 @@ void AVLTree<T>::setNodesRoot(AVLTree<T>::Node* node)
 
 //creates an AVLTree from sorted array
 template<typename T>
-AVLTree<T>* arrToAVLTree(T arr[], int start, int end)
+AVLTree<T>* AVLTree<T>::arrToAVLTree(T arr[], int start, int end)
 { 
 	//turns the sorted array to linked nodes
 	typename AVLTree<T>::Node* node = AVLTree<T>::arrToNodesTree(arr, start, end);
