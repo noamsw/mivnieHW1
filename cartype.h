@@ -10,7 +10,6 @@ class CarType
 public:
     AVLTree<Model>* models;
     int type;
-    AVLTree<Model>::Node* mostSold;
 public:
     // constructor
     CarType(int type, int numOfModels);

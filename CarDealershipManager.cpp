@@ -67,6 +67,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     // do i have to delete all the trees? 
     catch(std::exception& e)
     {
+        delete zeroes_insert;
         return ALLOCATION_ERROR;
     }
     // insert must also be wrapped in try catch
