@@ -84,8 +84,12 @@ public:
 	static int setNodesHeight(AVLTree<T>::Node* node);
 	//setting the node's parent
 	static void setNodesParent(AVLTree<T>::Node* node);
-	 
-
+	//setting the linked-node's Highest node
+	void setHighestNode(AVLTree<T>::Node* node);
+	//setting the linked-node's Lowest node
+	void setLowestNode(AVLTree<T>::Node* node);
+	//setting the linked-node's Root	 
+	void setNodesRoot(AVLTree<T>::Node* node);
 	//turns sorted array of <T> elements to an AVLTree
 	AVLTree<T> arrToAVLTree(T arr[], int start, int end);
 

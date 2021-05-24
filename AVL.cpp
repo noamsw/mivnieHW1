@@ -695,67 +695,134 @@ typename AVLTree<T>::Node* AVLTree<T>::arrToNodesTree(T arr[], int start, int en
 template<typename T>
 int AVLTree<T>::setNodesHeight(AVLTree<T>::Node* node)
 {
+	//if the node has no child
 	if (node->getLeftChild()==nullptr && node->getRightChild()==nullptr)
 	{
 		node->height=0;
 		return 0;
 	}
-	node->height= 1+std::max(setNodesHeight(node->getLeftChild()), setNodesHeight(node->getRightChild()));
+
+	//if the node has only Left child
+	if (node->getRightChild()==nullptr)
+	{
+		node->height=1;
+		node->getLeftChild()->height=0;
+		return 1;
+	}
+
+	//if the node has only Right child
+	if (node->getLeftChild()==nullptr)
+	{
+		node->height=1;
+		node->getRightChild()->height=0;
+		return 1;
+	}
+
+	//if the node has both childs:
+	if (node->getLeftChild()!=nullptr && node->getRightChild()!=nullptr)
+	{
+		node->height= 1+std::max(setNodesHeight(node->getLeftChild()), setNodesHeight(node->getRightChild()));
+	}
 	return node->height;
 }
 
 template<typename T>
 void AVLTree<T>::setNodesParent(AVLTree<T>::Node* node)
 {
-	if(node->getLeftChild()==nullptr && node->getRightChild()==nullptr)
+	//if the node has no child
+	if(node==nullptr || (node->getLeftChild()==nullptr && node->getRightChild()==nullptr))
 	{
 		return;
 	}
 
+	//if the node has a Left child
 	if (node->getLeftChild() != nullptr)
 	{
 		node->getLeftChild()->parent= node;
+		setNodesParent(node->getLeftChild());
 	}
 
+	//if the node has a Right child
 	if (node->getRightChild() != nullptr)
 	{
 		node->getRightChild()->parent= node;
+		setNodesParent(node->getRightChild());
 	}	
 
-	setNodesParent(node->getLeftChild());
-	setNodesParent(node->getRightChild());
 	return;
 }
 
-/*
-// the function creates an AVLTree from sorted array
+
+
+//setting the linked-node's Highest node
 template<typename T>
-AVLTree<T> arrToAVLTree(T arr[], int start, int end)
+void AVLTree<T>::setHighestNode(AVLTree<T>::Node* node)
+{
+	while (node->getRightChild() != nullptr)
+	{
+		node = node->getRightChild();
+	}
+	this->highest= node;
+	return;
+}
+
+//setting the linked-node's Lowest node
+template<typename T>
+void AVLTree<T>::setLowestNode(AVLTree<T>::Node* node)
+{
+	while (node->getLeftChild() != nullptr)
+	{
+		node = node->getLeftChild();
+	}
+	this->lowest= node;
+	return;
+}
+
+//setting the linked-node's Root
+template<typename T>	 
+void AVLTree<T>::setNodesRoot(AVLTree<T>::Node* node)
+{
+	this->root=node;
+	return;
+}
+
+
+//creates an AVLTree from sorted array
+template<typename T>
+AVLTree<T>* arrToAVLTree(T arr[], int start, int end)
 { 
 	//turns the sorted array to linked nodes
-	AVLTree<T>::arrToNodesTree(arr, start, end);
+	typename AVLTree<T>::Node* node = AVLTree<T>::arrToNodesTree(arr, start, end);
+	//seting the height of each node
+	AVLTree<T>::setNodesHeight(node);
+	//setting the parent of each node
+	AVLTree<T>::setNodesParent(node);
+	//initializing the AVLTree
+	AVLTree<T>* tree = new AVLTree<T>();
+	//setting the root of the tree
+	tree->setNodesRoot(node);
+	//setting the highest node of the tree
+	tree->setHighestNode(node);
+	//setting the lowest node of the tree
+	tree->setLowestNode(node);
 
-	//seting the heights and the parents of the nodes
-
-
-
-	//should update: 
-	//for each node: parent and height
-	//for the tree: lowest, higest and root
-
-
-	AVLTree<T> models_tree = new AVLTree<T>();
-
+	return tree;
 }
-*/
 
 int main()
 {
-	int arr[] = {0, 1, 2, 3, 4, 5};
-	AVLTree<int>* tree = new AVLTree<int>();
-	AVLTree<int>::Node* node = tree->arrToNodesTree(arr, 0, 6);
-	std::cout<< AVLTree<int>::setNodesHeight(node);
+	int arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+	/*
+	AVLTree<int>::Node* node = AVLTree<int>::arrToNodesTree(arr, 0, 8);
+	AVLTree<int>::setNodesHeight(node);
 	AVLTree<int>::setNodesParent(node);
+	AVLTree<int>* tree = new AVLTree<int>();
+	tree->setHighestNode(node);
+	tree->setLowestNode(node);
+	tree->setNodesRoot(node);
+	*/
+	AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
+	tree->print();
 	return 0;
 }
 
