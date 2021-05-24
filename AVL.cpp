@@ -798,6 +798,7 @@ AVLTree<T>* arrToAVLTree(T arr[], int start, int end)
 	//setting the parent of each node
 	AVLTree<T>::setNodesParent(node);
 	//initializing the AVLTree
+	// perhaps should be encased in a trycatch block?
 	AVLTree<T>* tree = new AVLTree<T>();
 	//setting the root of the tree
 	tree->setNodesRoot(node);
@@ -824,7 +825,7 @@ int main()
 	AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
 	tree->print();
 	return 0;
-}
+} 
 
 
 /*

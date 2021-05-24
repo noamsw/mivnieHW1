@@ -3,10 +3,11 @@
 
 #include "AVL.h"
 #include "model.h"
+#include "exceptions.h"
 
 class CarType
 {
-    AVLTree<Model>* models;//is this supposed to be a pointer??
+    AVLTree<Model>* models;
     int type;
     AVLTree<Model>::Node* mostSold;
 public:
