@@ -21,7 +21,7 @@ public:
         int height;
 		// public was here
     	//default constructor
-    	Node();
+    	//Node();
 		// Constructor initializing the data.
 		Node(T t);
 		//destructor
@@ -91,7 +91,7 @@ public:
 	//setting the linked-node's Root	 
 	void setNodesRoot(AVLTree<T>::Node* node);
 	//turns sorted array of <T> elements to an AVLTree
-	AVLTree<T> arrToAVLTree(T arr[], int start, int end);
+	static AVLTree<T>* arrToAVLTree(T arr[], int start, int end);
 
 public:
   	// Balance the tree

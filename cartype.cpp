@@ -15,7 +15,7 @@ CarType::CarType(int type, int numOfModels):type(type)
     //models = new AVLTree<Model>();
 
     //turning the sorted array into AVLTree
-    models->arrToAVLTree(modelsarr, 0, numOfModels-1); 
+    models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
 
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number
@@ -61,10 +61,4 @@ bool CarType::removeModel(int model_num)
 {
     Model model_to_delete= Model(this->type, model_num);
     return(this->models->remove(model_to_delete));
-}
-
-int main()
-{
-    CarType ct = CarType(3,6);
-    return 0;
 }
