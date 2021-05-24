@@ -4,7 +4,7 @@
 #include "iostream"
 
 class Model{
-private:
+public:
     int type;
     int model;
     int grade=0;

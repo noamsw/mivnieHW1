@@ -5,7 +5,7 @@
 #include "cartype.h"
 #include "model.h" 
 #include "iostream"
-
+#include "library.h"
 class DSW
 {
     // tree of trees, each node a tree of models
@@ -23,13 +23,13 @@ class DSW
     ~DSW();
     // adds a car type to the system
     // throws relevent exceptions
-    void addCarType(int typeId, int numOfModels);
+    StatusType addCarType(int typeId, int numOfModels);
     // removes a car type from the system
     // throws relevent exceptions
-    void removeCarType(int typedId);
+    StatusType removeCarType(int typeId);
     // Sell a car of typeid, model id and updates system
     // throws relevent exceptions
-    void sellCarr(int typeId, int modelId);
+    StatusType sellCarr(int typeId, int modelId);
     // files a complaint against a model
     // throws relevent exceptions
     void makeComplaint(int typeId, int numOfMonths);
