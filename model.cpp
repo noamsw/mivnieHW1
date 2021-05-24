@@ -6,7 +6,7 @@ Model::Model():type(0), model(0), grade(0), numSold(0){};
 // constuctor for Model. grade is initialized to 0 
 Model::Model(int type, int model):type(type),model(model){};
 
-// constuctor for Model. 
+// parameterized constuctor for Model. 
 Model::Model(int type, int model, int grade, int numSold):type(type),model(model), grade(grade), numSold(numSold){};
 
 // updates grade when a model recieves a complaint
