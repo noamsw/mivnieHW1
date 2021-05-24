@@ -91,7 +91,7 @@ public:
 	//setting the linked-node's Root	 
 	void setNodesRoot(AVLTree<T>::Node* node);
 	//turns sorted array of <T> elements to an AVLTree
-	AVLTree<T> arrToAVLTree(T arr[], int start, int end);
+	AVLTree<T>* arrToAVLTree(T arr[], int start, int end);
 
 private:
   	// Balance the tree
