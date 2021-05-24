@@ -29,7 +29,11 @@ CarType::~CarType()
 {
     delete models;
 }
-
+// returns pointer to most sold model
+AVLTree<Model>::Node* CarType::getMostSold()
+{
+    return mostSold;
+}
 //comparing operator, compares types by typeID
 bool CarType::operator<(const CarType& cartype)
 {
