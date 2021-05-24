@@ -810,25 +810,18 @@ AVLTree<T>* arrToAVLTree(T arr[], int start, int end)
 	return tree;
 }
 
+/*
 int main()
 {
 	int arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
-	/*
-	AVLTree<int>::Node* node = AVLTree<int>::arrToNodesTree(arr, 0, 8);
-	AVLTree<int>::setNodesHeight(node);
-	AVLTree<int>::setNodesParent(node);
-	AVLTree<int>* tree = new AVLTree<int>();
-	tree->setHighestNode(node);
-	tree->setLowestNode(node);
-	tree->setNodesRoot(node);
-	*/
-	AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
-	tree->print();
+	
+	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
+	AVLTree<Model>* models = new AVLTree<Model>();
 	return 0;
 } 
 
 
-/*
+
 int main() {
 
   // Allocate an array to keep track of the data we
