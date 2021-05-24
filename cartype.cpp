@@ -32,7 +32,7 @@ CarType::~CarType()
 // returns pointer to most sold model
 AVLTree<Model>::Node* CarType::getMostSold()
 {
-    return mostSold;
+    return models->getHighest();
 }
 //comparing operator, compares types by typeID
 bool CarType::operator<(const CarType& cartype)
@@ -52,18 +52,19 @@ bool CarType::operator==(const CarType& cartype)
     return this->type == cartype.type;
 }
 
-void* CarType::addModel(int model_num, int grade, int numSold)
+bool CarType::addModel(int model_num, int grade, int numSold)
 {
     Model model_to_add= Model(this->type, model_num, grade, numSold);
-    this->models->insert(model_to_add);
+    return(this->models->insert(model_to_add));
     //should I free model_to_add?
 }
 
-void* CarType::removeModel(int model_num)
+bool CarType::removeModel(int model_num)
 {
     Model model_to_delete= Model(this->type, model_num);
-    this->models->remove(model_to_delete);
-    delete &model_to_delete;
+    return(this->models->remove(model_to_delete));
+    // what are you deleting here?
+    // delete &model_to_delete;
 }
 
 int main()

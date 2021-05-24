@@ -25,8 +25,8 @@ public:
     // instantiate operator=
     bool operator>(const CarType& cartype);
     bool operator==(const CarType& cartype);
-    void addModel(int model_num, int grade, int numSold);
-    void removeModel(int model_num);
+    bool addModel(int model_num, int grade, int numSold);
+    bool removeModel(int model_num);
 };
 
 #endif
