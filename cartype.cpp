@@ -3,25 +3,24 @@
 
 CarType::CarType(int type, int numOfModels):type(type)
 {
-    
-    models = new AVLTree<Model>();
     //initializing a sorted array for insert into AVLTree
     // had to use new as size is determined during runtime
-    int* modelsarr = new int[numOfModels];
+    Model* modelsarr= new Model[numOfModels];
     for(int i=0; i<numOfModels; i++)
     {
-        modelsarr[i]=i;
+        modelsarr[i].setModel(this->type, i);
     }
-    if(!arrToTree(modelsarr, 0, numOfModels-1))
-    {
-        delete[] modelsarr;
-        delete models;
-        // throw exception??
-    }
+
+    //initializing the models AVLTree
+    //models = new AVLTree<Model>();
+
+    //turning the sorted array into AVLTree
+    models->arrToAVLTree(modelsarr, 0, numOfModels-1); 
+
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number
     // which is defined as the best selling model at initialization
-    mostSold=models->getHighest();
+    mostSold=models->getHighest(); //check
     delete[] modelsarr;
 }
 
@@ -53,7 +52,7 @@ void* CarType::addModel(int model_num, int grade, int numSold)
 {
     Model model_to_add= Model(this->type, model_num, grade, numSold);
     this->models->insert(model_to_add);
-    //should i free model_to_add
+    //should I free model_to_add?
 }
 
 void* CarType::removeModel(int model_num)
@@ -61,4 +60,10 @@ void* CarType::removeModel(int model_num)
     Model model_to_delete= Model(this->type, model_num);
     this->models->remove(model_to_delete);
     delete &model_to_delete;
+}
+
+int main()
+{
+    CarType ct = CarType(3,6);
+    return 0;
 }

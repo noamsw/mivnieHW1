@@ -1,5 +1,8 @@
 #include "model.h"
 
+//constructor for model. all fields initialized to 0
+Model::Model():type(0), model(0), grade(0), numSold(0){};
+
 // constuctor for Model. grade is initialized to 0 
 Model::Model(int type, int model):type(type),model(model){};
 
@@ -56,4 +59,10 @@ bool Model::operator>(const Model& other)
     // check if the model is smaller
     // if not, it is larger as there are no two different models that are equal
     return !(*this < other);
+}
+
+void Model::setModel(int type, int model)
+{
+    (*this).type= type;
+    (*this).model= model;
 }
