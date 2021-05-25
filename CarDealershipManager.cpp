@@ -196,20 +196,51 @@ StatusType DSW::sellCarr(int typeId, int modelId)
         }
            
     } 
-    // find and remove from zerostree, checking that its there
-    assert(zerostree->findNode(finder));
-    zerostree->findNode(finder)->data.models->remove(model_to_insert);
-    // remove and reinsert in gradedmodels
-    gradedmodels->remove(model_to_insert);
-    try
+    // check if the grade is now 0
+    // if it was in graded tree and not in zeros tree
+    // remove from the graded models tree
+    // enter into zeroes tree
+    if(grade == 0)
     {
-        gradedmodels->insert(model_to_insert);
+        // insert into zerostree
+        assert(zerostree->findNode(finder));
+        zerostree->findNode(finder)->data.models->insert(model_to_insert);
+        // remove and reinsert in gradedmodels
+        gradedmodels->remove(model_to_insert);
     }
-    catch (std::exception& e)
+    else
     {
-        throw ALLOCATION_ERROR;
-    }
-    return SUCCESS;  
+        // if the grade was 0
+        // remove from zeros tree
+        // insert into graded models
+        if(grade == 10)
+        {
+            // remove from zerostree
+            assert(zerostree->findNode(finder));
+            zerostree->findNode(finder)->data.models->remove(model_to_insert);
+            // insert into graded models
+            try
+            {
+                gradedmodels->insert(model_to_insert);
+            }
+            catch (std::exception& e)
+            {
+                throw ALLOCATION_ERROR;
+            }            
+        }
+        // else simply update graded models
+        else
+        {
+            try
+            {
+                gradedmodels->insert(model_to_insert);
+            }
+            catch (std::exception& e)
+            {
+                throw ALLOCATION_ERROR;
+            }
+        }      
+    } 
 }
 
 StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
@@ -240,35 +271,55 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
 
     // update model's grade in the typestree
     int original_grade = m_to_complaint->data.grade;
-    int complaint_grade = t / 100;
+    int complaint_grade = 100 / t;
     m_to_complaint->data.grade = m_to_complaint->data.grade - complaint_grade;
 
     // initialize the model we want to insert to models tree
     Model model_to_add= Model(typeID, modelID, m_to_complaint->data.grade, m_to_complaint->data.numSold);
 
     // check if the type is in the zerostree
-    AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
-    if (ct_node_zeros != nullptr)
+    // if the grade was zero it was in the zeros tree
+    // remove it
+    if(original_grade == 0)
     {
-        // check if the model is in the ct_node_zeros
-        AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
-        if (m_node_zeros != nullptr)
+        AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+        if (ct_node_zeros != nullptr)
         {
-            // remove the model from the zeros tree
-            ct_node_zeros->data.removeModel(modelID);
-            // insert te model to the grade tree
-            gradedmodels->insert(model_to_add);
-            return SUCCESS;
-        }
+            // check if the model is in the ct_node_zeros
+            AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
+            if (m_node_zeros != nullptr)
+            {
+                // remove the model from the zeros tree
+                ct_node_zeros->data.removeModel(modelID);
+                // insert te model to the grade tree
+                gradedmodels->insert(model_to_add);
+                return SUCCESS;
+            }
+        }        
     }
-
-    // if the model isnt in the zeros, it must be in the grademodels
-    // find the model in the gradesmodel 
-    Model model_to_remove = Model(typeID, modelID, original_grade, m_to_complaint->data.numSold);
-    //check if model_to_remove is in models tree
-    gradedmodels->remove(model_to_remove);
-    gradedmodels->insert(model_to_add);
-    return SUCCESS;
+    // check if it should be removed from gradedmodel
+    // and inserted into zero
+    if ((original_grade - complaint_grade) ==0)
+    {
+        // remove from gradedmodels
+        Model model_to_remove = Model(typeID, modelID, original_grade, m_to_complaint->data.numSold);
+        gradedmodels->remove(model_to_remove);
+        //find were to insert in zeroes tree
+        // insert it
+        AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+        if (ct_node_zeros != nullptr)
+            ct_node_zeros->data.addModel(modelID, 0, m_to_complaint->data.numSold);
+        return SUCCESS;
+    }
+    // else we must simpl reinsert it in gradedmodels
+    else
+    {
+        Model model_to_remove = Model(typeID, modelID, original_grade, m_to_complaint->data.numSold);
+        //check if model_to_remove is in models tree
+        gradedmodels->remove(model_to_remove);
+        gradedmodels->insert(model_to_add);
+        return SUCCESS;
+    }
 }
 
 StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
