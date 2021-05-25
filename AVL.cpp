@@ -329,6 +329,7 @@ bool AVLTree<T>::remove(const T& t) {
 				if (p == nullptr) {
 					setRoot(nullptr);
 					delete toBeRemoved;
+					toBeRemoved = nullptr;
 					lowest = nullptr;
 					highest = nullptr;
 				}
@@ -353,6 +354,7 @@ bool AVLTree<T>::remove(const T& t) {
 						p->setRightChild(nullptr);
 					} 
 					delete toBeRemoved;
+					toBeRemoved = nullptr;
 					p->updateHeight();
 					balanceAtNode(p);
 				} 
@@ -367,6 +369,7 @@ bool AVLTree<T>::remove(const T& t) {
 					lowest = toBeRemoved->getRightChild();
 					setRoot(toBeRemoved->getRightChild());
 					delete toBeRemoved;
+					toBeRemoved = nullptr;
 				}
 				// Otherwise, change the parent so it doesn't
 				// point to us, delete ourself, update the
@@ -377,6 +380,7 @@ bool AVLTree<T>::remove(const T& t) {
 					else
 						p->setRightChild(toBeRemoved->getRightChild());
 					delete toBeRemoved;
+					toBeRemoved = nullptr;
 					p->updateHeight();
 					balanceAtNode(p);
 			} 
@@ -394,6 +398,7 @@ bool AVLTree<T>::remove(const T& t) {
 					highest = toBeRemoved->getLeftChild();
 					setRoot(toBeRemoved->getLeftChild());
 					delete toBeRemoved;
+					toBeRemoved = nullptr;
 				}
 				// Otherwise, change the parent so it doesn't
 				// point to us, delete ourself, update the
@@ -404,6 +409,7 @@ bool AVLTree<T>::remove(const T& t) {
 					else
 						p->setRightChild(toBeRemoved->getLeftChild());
 					delete toBeRemoved;
+					toBeRemoved = nullptr;
 					p->updateHeight();
 					balanceAtNode(p);
 				}
@@ -489,6 +495,7 @@ bool AVLTree<T>::remove(const T& t) {
 			else
 				p->setRightChild(replacement);
 		delete toBeRemoved;
+		toBeRemoved = nullptr;
 		balanceAtNode(temp_node);
 	}
 	return true;
