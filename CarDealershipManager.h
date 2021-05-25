@@ -16,8 +16,11 @@ class DSW
     AVLTree<CarType>* zerostree;
     // tree of models by grade
     AVLTree<Model>* gradedmodels;
-    // a pointer to the systems best selling model
-    AVLTree<Model>::Node* bestseller;
+    // a tree with the systems best sellers
+    // it will simply contain one model for each type
+    // but will not update with complaints
+    // and so the grade will be representative of sales.
+    AVLTree<Model>* bestsellers;
 
     DSW();
     ~DSW();

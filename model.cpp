@@ -1,5 +1,5 @@
 #include "model.h"
-
+#include "avl.h"
 //default constructor for model. all fields initialized to 0
 Model::Model():type(0), model(0), grade(0), numSold(0){};
 
@@ -156,27 +156,5 @@ int main() {
 }
 */
 
-/*
-int main()
-{
-	
-	Model modelsarr[10];
-    for(int i=0; i<10; i++)
-    {
-        modelsarr[i].setModel(1, i);
-    }
-	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
-	AVLTree<Model>* models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, 9);;
-	models->print();
-	*
-	int arr[10];
-    for(int i=0; i<10; i++)
-    {
-        arr[i]=i;
-    }
-	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
-	AVLTree<int> tree = AVLTree<int>();
-	tree.print();
-	return 0;
-} 
-*/
+
+

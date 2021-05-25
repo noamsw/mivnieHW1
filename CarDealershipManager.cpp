@@ -13,7 +13,7 @@ DSW::DSW()
     typestree = new AVLTree<CarType>();
     zerostree = new AVLTree<CarType>();
     gradedmodels = new AVLTree<Model>();
-    bestseller = nullptr;
+    bestsellers = new AVLTree<Model>();
 }
 
 // destructor
@@ -23,6 +23,7 @@ DSW::~DSW()
     delete typestree;
     delete zerostree;
     delete gradedmodels;
+    delete bestsellers;
 }
 
 
@@ -56,10 +57,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
         delete to_insert;
         return ALLOCATION_ERROR;
     }
-    if (bestseller == nullptr)
-        bestseller = to_insert->getMostSold();
-    if(bestseller->data < (to_insert->getMostSold())->data)
-        bestseller = to_insert->getMostSold();
+    bestsellers->insert(Model(typeId,0,0,0));
     CarType* zeroes_insert;
     try
     {
@@ -87,7 +85,6 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
 }
 
 // removes a car type from the system
-// we must check how the mostSold node is update in cartype
 StatusType DSW::removeCarType(int typeId)
 {
     if(typeId <= 0)
@@ -101,31 +98,24 @@ StatusType DSW::removeCarType(int typeId)
     // if we are here then the car was in the tree
     AVLTree<CarType>::Node* node_to_remove = typestree->findNode(to_remove);
     assert(node_to_remove != nullptr);
+    // remove from the bestsellers tree
+    // in order to do so we will find the relevent information
+    // from the typestree node
+    int grade = node_to_remove->data.best_seller->data.numSold*10;
+    int model = node_to_remove->data.best_seller->data.model;
+    // remove from the bestsellers tree
+    bestsellers->remove(Model(typeId, model, grade, grade/10));
+    // best seller will be updated automatically as highest node 
+    // of the tree
     while(node_to_remove->data.models->root != nullptr)
     {
         // remove the model from gradedmodels
-        // no need to check if whats actually there
+        // no need to check whats actually there
         gradedmodels->remove(node_to_remove->data.models->root->data);
         // remove the model from the typestree tree node
         node_to_remove->data.models->remove(node_to_remove->data.models->root->data);
     }
     typestree->remove(to_remove);
-    // chech the state of the highest seller
-    if(gradedmodels != nullptr)
-    {   
-        // if the car is in graded models than it has sold a model.
-        // therefore it is of course a higher seller than zerosTree
-        bestseller = gradedmodels->getHighest();
-    }
-    else if(gradedmodels != nullptr)
-        {
-            // if there are no gradedmodels
-            // there are no sold models
-            // therefor, by definition the best model is lowest model of lowest type
-            // i think that the highest is actully defined opposite of definition
-            bestseller = typestree->getHighest()->data.getMostSold();
-        }
-    bestseller = nullptr;
     return SUCCESS;
 }
 
@@ -138,12 +128,12 @@ StatusType DSW::sellCarr(int typeId, int modelId)
         return INVALID_INPUT;
     CarType finder = CarType(typeId , 1);
     // check that the type was in the tree
-    AVLTree<CarType>::Node* type_to_update = typestree->findNode(finder);
-    if(!type_to_update)
+    AVLTree<CarType>::Node* tree_of_models_to_update = typestree->findNode(finder);
+    if(!tree_of_models_to_update)
         return FAILURE;
     // check that the model was in the tree
     AVLTree<Model>::Node* model_to_update 
-        = type_to_update->data.models->findNode(Model(typeId,modelId));
+        = tree_of_models_to_update->data.models->findNode(Model(typeId,modelId));
     if(!model_to_update)
         return FAILURE;
     // create an updated model to insert
@@ -151,19 +141,64 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     int sold = model_to_update->data.numSold+1;
     Model model_to_insert = Model(typeId, modelId, grade, sold);
     // remove and then insert the updated model
-    type_to_update->data.models->remove(Model(typeId,modelId));
+    tree_of_models_to_update->data.models->remove(Model(typeId,modelId));
     try
     {
-        type_to_update->data.models->insert(model_to_insert);
+        tree_of_models_to_update->data.models->insert(model_to_insert);
     }
     catch (std::exception& e)
     {
         // need to decide what to do if a bad allocation happens
         throw ALLOCATION_ERROR;
     }
+    // check if this is now the best seller
+    // if its a null pointer it was and remains best seller
+    if(tree_of_models_to_update->data.best_seller == nullptr)
+    {
+        //update the bestsellers tree
+        bestsellers->remove(Model(typeId,modelId,sold-1,0));
+        bestsellers-> insert(Model(typeId,modelId,sold,0));
+        //update the best seller in the tree of models
+        tree_of_models_to_update->data.best_seller 
+            = tree_of_models_to_update->data.models->findNode(model_to_insert);
+    }    
+    // if it was not a null pointer than check
+    // if the current model has now sold more models
+    else
+    {
+        if(tree_of_models_to_update->data.best_seller->data.numSold < sold)
+        {
+            // update the bestsellers tree
+            int model = tree_of_models_to_update->data.best_seller->data.model;
+            int grade = tree_of_models_to_update->data.best_seller->data.numSold;
+            bestsellers->remove(Model(typeId,model,grade,0));
+            bestsellers-> insert(Model(typeId,modelId,sold,0));
+            // update the tree of models best seller
+            tree_of_models_to_update->data.best_seller 
+            = tree_of_models_to_update->data.models->findNode(model_to_insert);
+
+        }
+        // final case - equal
+        else if(tree_of_models_to_update->data.best_seller->data.numSold == sold)
+        {
+            
+            if(tree_of_models_to_update->data.best_seller->data.model >= modelId)
+            {
+                // update the bestsellers tree
+                int model = tree_of_models_to_update->data.best_seller->data.model;
+                int grade = tree_of_models_to_update->data.best_seller->data.numSold;
+                bestsellers->remove(Model(typeId,model,grade,0));
+                bestsellers-> insert(Model(typeId,modelId,sold,0));
+                // update the tree of models best seller
+                tree_of_models_to_update->data.best_seller 
+                = tree_of_models_to_update->data.models->findNode(model_to_insert);
+            }
+        }
+           
+    } 
     // find and remove from zerostree, checking that its there
-    if(zerostree->findNode(finder))
-        zerostree->findNode(finder)->data.models->remove(model_to_insert);
+    assert(zerostree->findNode(finder));
+    zerostree->findNode(finder)->data.models->remove(model_to_insert);
     // remove and reinsert in gradedmodels
     gradedmodels->remove(model_to_insert);
     try
@@ -173,13 +208,6 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     catch (std::exception& e)
     {
         throw ALLOCATION_ERROR;
-    }
-    // check if we need to update bestseller
-    // make sure that the grade is positive. 
-    if(grade>0)
-    {
-        if(gradedmodels->getHighest()->data==model_to_insert)
-                bestseller = gradedmodels->getHighest();
     }
     return SUCCESS;  
 }
@@ -255,7 +283,7 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
     //if typeID=0, we should return system's best seller
     if (typeID==0)
     {
-        *modelID = bestseller->data.model;
+        *modelID = bestsellers->data.model;
         return SUCCESS;
     }
 

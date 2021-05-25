@@ -21,6 +21,7 @@ CarType::CarType(int type, int numOfModels):type(type)
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number
     // which is defined as the best selling model at initialization
+    best_seller = models->getHighest();
     delete[] modelsarr;
 }
 
@@ -38,7 +39,13 @@ CarType::~CarType()
 // returns pointer to most sold model
 AVLTree<Model>::Node* CarType::getMostSold()
 {
-    return models->getHighest();
+    return best_seller;
+}
+
+// returns the model number of the best seller
+int CarType::getBestSeller() const
+{
+    return best_seller->data.model;
 }
 
 // copy assignment operator

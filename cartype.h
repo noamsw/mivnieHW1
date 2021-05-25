@@ -8,16 +8,20 @@
 class CarType
 {
 public:
+    // tree of the models of type
     AVLTree<Model>* models;
+    // type id
     int type;
+    // a pointer to the best seller of type
+    AVLTree<Model>::Node* best_seller;
 public:
     // constructor
     CarType(int type, int numOfModels);
     CarType(CarType& cartype);
     ~CarType();
     // returns the model number of the best seller
-    int getBestSeller();
-    // returns a pointer to the highest selling model
+    int getBestSeller() const;
+    // returns a pointer to the best seller
     AVLTree<Model>::Node* getMostSold();
     // comparing method between to cartypes
     // detertmined by typeid

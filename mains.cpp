@@ -1,5 +1,7 @@
-random mains to test with:
-
+#include "avl.h"
+#include "model.h"
+// random mains to test with:
+/*
 //used to test models.cpp
 int main() {
 
@@ -52,3 +54,28 @@ int main() {
 
   return 0;
 }
+*/
+int main()
+{
+	
+	Model modelsarr[10];
+    for(int i=0; i<10; i++)
+    {
+        modelsarr[i].setModel(1, i);
+    }
+	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
+	AVLTree<Model>* models;
+  models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, 9);;
+	models->print();
+	/*
+	int arr[10];
+    for(int i=0; i<10; i++)
+    {
+        arr[i]=i;
+    }
+	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
+	AVLTree<int> tree = AVLTree<int>();
+	tree.print();
+	return 0;
+    */
+} 

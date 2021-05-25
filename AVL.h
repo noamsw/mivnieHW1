@@ -4,7 +4,7 @@
 #include <iostream> 
 #include <ctime>
 #include <iomanip>
-// #include "model.h"
+#include "model.h"
 
 template<typename T>
 class AVLTree
