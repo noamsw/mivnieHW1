@@ -144,8 +144,10 @@ public:
     AVLTree<Model>::Node* best_seller;
 public:
     // constructor
+    // default constructor
+    CarType();
     CarType(int type, int numOfModels);
-    CarType(CarType& cartype);
+    CarType(const CarType& cartype);
     ~CarType();
     // returns the model number of the best seller
     int getBestSeller() const;
@@ -153,13 +155,32 @@ public:
     AVLTree<Model>::Node* getMostSold();
     // comparing method between to cartypes
     // detertmined by typeid
-    bool operator<(const CarType& cartype);
+    bool operator<(const CarType& cartype) const;
     // instantiate operator=
     CarType& operator=(CarType& cartype);
-    bool operator>(const CarType& cartype);
-    bool operator==(const CarType& cartype);
+    bool operator>(const CarType& cartype) const;
+    bool operator==(const CarType& cartype) const;
     bool addModel(int model_num, int grade, int numSold);
     bool removeModel(int model_num);
+};
+
+class MostSold{
+public:
+    int type;
+    int model;
+    int numsold=0;
+
+    MostSold();
+    MostSold(int type, int model, int numsold);
+    MostSold(const MostSold& other) = default;
+    MostSold& operator=(const MostSold& other) = default;
+    bool operator==(const MostSold& other) const;
+    bool operator>(const MostSold& other) const;
+    bool operator<(const MostSold& other) const;
+    bool operator==(const MostSold& other);
+    bool operator>(const MostSold& other);
+    bool operator<(const MostSold& other);
+    friend std::ostream& operator<<(std::ostream& os, const MostSold& car);
 };
 
 class DSW
@@ -173,10 +194,9 @@ class DSW
     // tree of models by grade
     AVLTree<Model>* gradedmodels;
     // a tree with the systems best sellers
-    // it will simply contain one model for each type
-    // but will not update with complaints
-    // and so the grade will be representative of sales.
-    AVLTree<Model>* bestsellers;
+    // it is of type mostsold class
+    // this contains type, model, numsold
+    AVLTree<MostSold>* bestsellers;
 
     DSW();
     ~DSW();
@@ -1117,6 +1137,14 @@ std::ostream& operator<<(std::ostream& os, const Model& car)
     return os;
 }
 
+// default constructor
+CarType::CarType()
+{
+    models = nullptr;
+    type = 0;
+    best_seller = nullptr;
+}
+
 CarType::CarType(int type, int numOfModels):type(type)
 {
     //initializing a sorted array for insert into AVLTree
@@ -1142,7 +1170,7 @@ CarType::CarType(int type, int numOfModels):type(type)
 }
 
 // copy constructor
-CarType::CarType(CarType& cartype):type(cartype.type)
+CarType::CarType(const CarType& cartype):type(cartype.type)
 {
     models = cartype.models;
 }
@@ -1169,22 +1197,23 @@ CarType& CarType::operator=(CarType& cartype)
 {
     models = cartype.models;
     type = cartype.type;
+    return *this;
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator<(const CarType& cartype)
+bool CarType::operator<(const CarType& cartype) const
 {
     return this->type < cartype.type;
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator>(const CarType& cartype)
+bool CarType::operator>(const CarType& cartype) const
 {
     return this->type < cartype.type;
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator==(const CarType& cartype)
+bool CarType::operator==(const CarType& cartype) const
 {
     return this->type == cartype.type;
 }
@@ -1201,6 +1230,109 @@ bool CarType::removeModel(int model_num)
     return(this->models->remove(model_to_delete));
 }
 
+//default constructor for model. all fields initialized to 0
+MostSold::MostSold():type(0), model(0), numsold(0){};
+
+// constuctor for Model. grade is initialized to 0 
+MostSold::MostSold(int type, int model, int numsold):type(type),numsold(numsold){};
+
+// comparing operator, returns true if equal
+// cars are equal to one another if
+// both type and model are equal const
+bool MostSold::operator==(const MostSold& other) const
+{
+    if(type == other.type && model == other.model)
+        return true;
+    return false;
+}
+
+// comparing operator, returns true if equal
+// cars are equal to one another if
+// both type and model are equal
+bool MostSold::operator==(const MostSold& other) 
+{
+    if(type == other.type && model == other.model)
+        return true;
+    return false;
+}
+
+// comparing operator, compares numsold of cars
+bool MostSold::operator<(const MostSold& other)
+{
+    // if the numsold is smaller, return true
+    if(numsold < other.numsold){
+        return true;
+    }
+    // otherwise check if the numsold is equal
+    if(numsold == other.numsold)
+    {
+        // now, if the grade is equal, but the type is bigger
+        // than it is still smaller, return true
+        if(type > other.type)
+            return true;
+        // if the type is equal, check that the model is bigger
+        if(type == other.type)
+            if(model > other.model)
+                return true;
+    }
+    // the numsold is either larger
+    // or the grade is equal but the type is smaller
+    // or the grade and type are equal but the model is smaller
+    // in all of these cases the car is a more sold model
+    // return false
+    return false; 
+}
+// comparing operator, compares grades of cars const
+bool MostSold::operator<(const MostSold& other) const
+{
+    // if the numsold is smaller, return true
+    if(numsold < other.numsold){
+        return true;
+    }
+    // otherwise check if the numsold is equal
+    if(numsold == other.numsold)
+    {
+        // now, if the grade is equal, but the type is bigger
+        // than it is still smaller, return true
+        if(type > other.type)
+            return true;
+        // if the type is equal, check that the model is bigger
+        if(type == other.type)
+            if(model > other.model)
+                return true;
+    }
+    // the numsold is either larger
+    // or the grade is equal but the type is smaller
+    // or the grade and type are equal but the model is smaller
+    // in all of these cases the car is a more sold model
+    // return false
+    return false; 
+}
+
+// comparing operator, compares grades of cars
+bool MostSold::operator>(const MostSold& other)
+{
+    // check if the model is smaller
+    // if not, it is larger as there are no two different models that are equal
+    return !(*this < other);
+}
+
+// comparing operator, compares grades of cars const
+bool MostSold::operator>(const MostSold& other) const
+{
+    // check if the model is smaller
+    // if not, it is larger as there are no two different models that are equal
+    return !(*this < other);
+}
+
+
+std::ostream& operator<<(std::ostream& os, const MostSold& car)
+{
+    // os << car.type << "." << car.model << "." << car.numsold;
+    os << car.model ;
+    return os;
+}
+
 // default constructer
 // initializes all trees to empty trees
 // bestseller to nullptr
@@ -1209,7 +1341,7 @@ DSW::DSW()
     typestree = new AVLTree<CarType>();
     zerostree = new AVLTree<CarType>();
     gradedmodels = new AVLTree<Model>();
-    bestsellers = new AVLTree<Model>();
+    bestsellers = new AVLTree<MostSold>();
 }
 
 // destructor
@@ -1253,7 +1385,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
         delete to_insert;
         return ALLOCATION_ERROR;
     }
-    bestsellers->insert(Model(typeId,0,0,0));
+    bestsellers->insert(MostSold(typeId,0,0));
     CarType* zeroes_insert;
     try
     {
@@ -1300,7 +1432,7 @@ StatusType DSW::removeCarType(int typeId)
     int grade = node_to_remove->data.best_seller->data.numSold*10;
     int model = node_to_remove->data.best_seller->data.model;
     // remove from the bestsellers tree
-    bestsellers->remove(Model(typeId, model, grade, grade/10));
+    bestsellers->remove(MostSold(typeId, model, grade/10));
     // best seller will be updated automatically as highest node 
     // of the tree
     while(node_to_remove->data.models->root != nullptr)
@@ -1352,8 +1484,8 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     if(tree_of_models_to_update->data.best_seller == nullptr)
     {
         //update the bestsellers tree
-        bestsellers->remove(Model(typeId,modelId,sold-1,0));
-        bestsellers-> insert(Model(typeId,modelId,sold,0));
+        bestsellers->remove(MostSold(typeId,modelId,sold-1));
+        bestsellers-> insert(MostSold(typeId,modelId,sold));
         //update the best seller in the tree of models
         tree_of_models_to_update->data.best_seller 
             = tree_of_models_to_update->data.models->findNode(model_to_insert);
@@ -1366,9 +1498,9 @@ StatusType DSW::sellCarr(int typeId, int modelId)
         {
             // update the bestsellers tree
             int model = tree_of_models_to_update->data.best_seller->data.model;
-            int grade = tree_of_models_to_update->data.best_seller->data.numSold;
-            bestsellers->remove(Model(typeId,model,grade,0));
-            bestsellers-> insert(Model(typeId,modelId,sold,0));
+            int old_sold = tree_of_models_to_update->data.best_seller->data.numSold;
+            bestsellers->remove(MostSold(typeId,model,old_sold));
+            bestsellers-> insert(MostSold(typeId,modelId,sold));
             // update the tree of models best seller
             tree_of_models_to_update->data.best_seller 
             = tree_of_models_to_update->data.models->findNode(model_to_insert);
@@ -1382,9 +1514,9 @@ StatusType DSW::sellCarr(int typeId, int modelId)
             {
                 // update the bestsellers tree
                 int model = tree_of_models_to_update->data.best_seller->data.model;
-                int grade = tree_of_models_to_update->data.best_seller->data.numSold;
-                bestsellers->remove(Model(typeId,model,grade,0));
-                bestsellers-> insert(Model(typeId,modelId,sold,0));
+                int old_sold = tree_of_models_to_update->data.best_seller->data.numSold;
+                bestsellers->remove(MostSold(typeId,model,old_sold));
+                bestsellers-> insert(MostSold(typeId,modelId,sold));
                 // update the tree of models best seller
                 tree_of_models_to_update->data.best_seller 
                 = tree_of_models_to_update->data.models->findNode(model_to_insert);
@@ -1499,5 +1631,5 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
 
 StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 {
-
+  return ALLOCATION_ERROR;
 }

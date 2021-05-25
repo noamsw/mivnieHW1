@@ -1,6 +1,13 @@
 #include "cartype.h"
 #include "iostream"
 
+// default constructer
+CarType::CarType()
+{
+    models = nullptr;
+    type = 0;
+    best_seller = nullptr;
+}
 CarType::CarType(int type, int numOfModels):type(type)
 {
     //initializing a sorted array for insert into AVLTree
@@ -26,9 +33,10 @@ CarType::CarType(int type, int numOfModels):type(type)
 }
 
 // copy constructor
-CarType::CarType(CarType& cartype):type(cartype.type)
+// honestly this is a longshot
+CarType::CarType(const CarType& cartype):type(cartype.type)
 {
-    models = cartype.models;
+    models = const_cast<AVLTree<Model>*>(cartype.models);
 }
 
 //destructor for CarType, must delete models
@@ -53,22 +61,23 @@ CarType& CarType::operator=(CarType& cartype)
 {
     models = cartype.models;
     type = cartype.type;
+    return *this;
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator<(const CarType& cartype)
+bool CarType::operator<(const CarType& cartype) const
 {
     return this->type < cartype.type;
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator>(const CarType& cartype)
+bool CarType::operator>(const CarType& cartype) const
 {
     return this->type < cartype.type;
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator==(const CarType& cartype)
+bool CarType::operator==(const CarType& cartype) const
 {
     return this->type == cartype.type;
 }

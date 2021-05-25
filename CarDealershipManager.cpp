@@ -288,7 +288,7 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
     }
 
     //check if typeID is in the system
-    CarType ct_find = CarType (typeID, 1);
+    CarType ct_find(typeID, 1);
     AVLTree<CarType>::Node* ct_node = typestree->findNode(ct_find);
     if (ct_node==nullptr)
     {

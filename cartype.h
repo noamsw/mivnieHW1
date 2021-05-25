@@ -16,20 +16,22 @@ public:
     AVLTree<Model>::Node* best_seller;
 public:
     // constructor
+    // default constructor
+    CarType();
     CarType(int type, int numOfModels);
-    CarType(CarType& cartype);
+    CarType(const CarType& cartype);
     ~CarType();
     // returns the model number of the best seller
     int getBestSeller() const;
     // returns a pointer to the best seller
     AVLTree<Model>::Node* getMostSold();
-    // comparing method between to cartypes
-    // detertmined by typeid
-    bool operator<(const CarType& cartype);
     // instantiate operator=
     CarType& operator=(CarType& cartype);
-    bool operator>(const CarType& cartype);
-    bool operator==(const CarType& cartype);
+    // comparing method between to cartypes
+    // detertmined by typeid
+    bool operator<(const CarType& cartype) const;
+    bool operator>(const CarType& cartype) const;
+    bool operator==(const CarType& cartype) const;
     bool addModel(int model_num, int grade, int numSold);
     bool removeModel(int model_num);
 };
