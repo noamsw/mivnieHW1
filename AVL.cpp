@@ -1,6 +1,5 @@
-#include "AVL.h"
-
-
+#include "avl.h"
+#include "model.h"
 //constructor for node
 /**template<typename T>
 AVLTree<T>::Node::Node(){
@@ -813,11 +812,26 @@ AVLTree<T>* AVLTree<T>::arrToAVLTree(T arr[], int start, int end)
 /*
 int main()
 {
-	int arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 	
+	Model modelsarr[10];
+    for(int i=0; i<10; i++)
+    {
+        modelsarr[i].setModel(1, 10-i-1);
+    }
 	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
-	AVLTree<Model>* models = new AVLTree<Model>();
+	AVLTree<Model>* models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, 9);;
+	models->print();
+	
+	int arr[10];
+    for(int i=0; i<10; i++)
+    {
+        arr[i]=i;
+    }
+	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
+	AVLTree<int>* tree = AVLTree<int>::arrToAVLTree(arr, 0, 9);;
+	tree->print();
 	return 0;
+	
 } 
 */
 

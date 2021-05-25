@@ -2,7 +2,7 @@
 #define MODEL_H_
 
 #include "iostream"
-#include "AVL.h"
+#include "avl.h"
 
 class Model{
 public:

@@ -74,11 +74,11 @@ bool Model::operator<(const Model& other) const
     {
         // now, if the grade is equal, but the type is bigger
         // than it is still smaller, return true
-        if(type > other.type)
+        if(type < other.type)
             return true;
         // if the type is equal, check that the model is larger
         if(type == other.type)
-            if(model > other.model)
+            if(model < other.model)
                 return true;
     }
     // the grade is either smaller
@@ -113,9 +113,70 @@ void Model::setModel(int type, int model)
 
 std::ostream& operator<<(std::ostream& os, const Model& car)
 {
-    // os << "typeId: " << car.type << " modelId: " << car.model << " grade: " << car.grade;
+    // os << car.type << "." << car.model << "." << car.grade;
     os << car.model ;
     return os;
 }
+/*
+int main() {
+
+  // Allocate an array to keep track of the data we
+  // add to the tree, initialize the random numbers,
+  // allocate an empty tree.
+  Model modelsarr[10];
+  modelsarr[0].setModel(2, 21);
+  modelsarr[1].setModel(2, 34);
+  modelsarr[2].setModel(2, 13);
+  modelsarr[3].setModel(3, 0);
+  modelsarr[4].setModel(2, 3);
+  modelsarr[5].setModel(2, 6);
+  modelsarr[6].setModel(2, 8);
+  modelsarr[7].setModel(2, 17);
+  modelsarr[8].setModel(1, 42);
+  modelsarr[9].setModel(2, 27);
+  AVLTree<Model> *tree = new AVLTree<Model>();
+
+  for (int i = 0; i < 10; i++) 
+  { 
+    tree->insert(modelsarr[i]);
+	std::cout << "Adding " << modelsarr[i] << std::endl;
+	tree->print();
+  } // for
 
 
+  // Remove each of the numbers by displaying the
+  // number being removed, performing the removal,
+  // and displaying the current state of the tree.
+  for (int i = 0; i < 10; i++) {
+	std::cout << "Removing " << modelsarr[i] << std::endl;
+	tree->remove(modelsarr[i]);
+	tree->print();
+  } // for
+  return 0;
+}
+*/
+
+/*
+int main()
+{
+	
+	Model modelsarr[10];
+    for(int i=0; i<10; i++)
+    {
+        modelsarr[i].setModel(1, i);
+    }
+	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
+	AVLTree<Model>* models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, 9);;
+	models->print();
+	*
+	int arr[10];
+    for(int i=0; i<10; i++)
+    {
+        arr[i]=i;
+    }
+	//AVLTree<int>* tree = arrToAVLTree(arr, 0, 8);
+	AVLTree<int> tree = AVLTree<int>();
+	tree.print();
+	return 0;
+} 
+*/

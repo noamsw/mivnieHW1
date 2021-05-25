@@ -8,12 +8,13 @@ CarType::CarType(int type, int numOfModels):type(type)
     Model* modelsarr= new Model[numOfModels];
     for(int i=0; i<numOfModels; i++)
     {
+
         modelsarr[i].setModel(this->type, i);
     }
     
     //initializing the models AVLTree
     //AVLTree<Model>* modelstree = new AVLTree<Model>();
-    this->models = new AVLTree<Model>::AVLTree();
+    this->models = new AVLTree<Model>;
     //turning the sorted array into AVLTree
     models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
 
@@ -21,6 +22,12 @@ CarType::CarType(int type, int numOfModels):type(type)
     // is defined to be the model with the lowest model number
     // which is defined as the best selling model at initialization
     delete[] modelsarr;
+}
+
+// copy constructor
+CarType::CarType(CarType& cartype):type(cartype.type)
+{
+    models = cartype.models;
 }
 
 //destructor for CarType, must delete models
@@ -33,10 +40,18 @@ AVLTree<Model>::Node* CarType::getMostSold()
 {
     return models->getHighest();
 }
+
+// copy assignment operator
+CarType& CarType::operator=(CarType& cartype)
+{
+    models = cartype.models;
+    type = cartype.type;
+}
+
 //comparing operator, compares types by typeID
 bool CarType::operator<(const CarType& cartype)
 {
-    return this->type > cartype.type;
+    return this->type < cartype.type;
 }
 
 //comparing operator, compares types by typeID

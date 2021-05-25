@@ -1,10 +1,10 @@
 #ifndef AVL_H_
 #define AVL_H_
-
+// #include "cartype.h"
 #include <iostream> 
 #include <ctime>
 #include <iomanip>
-#include "model.h"
+// #include "model.h"
 
 template<typename T>
 class AVLTree
