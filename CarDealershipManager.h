@@ -5,36 +5,40 @@
 #include "cartype.h"
 #include "model.h" 
 #include "iostream"
+#include "library.h"
 
 class DSW
 {
-    // tree of trees, each node a tree of models
+    public:
+    // tree of trees, each node has a tree of models
     AVLTree<CarType>* typestree;
-    // tree of trees, each node a tree of models. 
-    // contaning only models with a grade of zero
+    // tree of trees, each node has a tree of models. 
+    // contanins only models with a grade of zero
     AVLTree<CarType>* zerostree;
     // tree of models by grade
     AVLTree<Model>* gradedmodels;
     // a pointer to the systems best selling model
     AVLTree<Model>::Node* bestseller;
 
-    public:
     DSW();
     ~DSW();
     // adds a car type to the system
     // throws relevent exceptions
-    void addCarType(int typeId, int numOfModels);
+    StatusType AddCarType(int typeID, int numOfModels);
     // removes a car type from the system
     // throws relevent exceptions
-    void removeCarType(int typedId);
+    StatusType RemoveCarType(int typeID);
     // Sell a car of typeid, model id and updates system
     // throws relevent exceptions
-    void sellCarr(int typeId, int modelId);
+    StatusType SellCar(int typeID, int modelID);;
     // files a complaint against a model
     // throws relevent exceptions
-    void makeComplaint(int typeId, int numOfMonths);
-    void getBestSellerModelByType(int typeId, int* modelId);
-    void getWorstModels(int numOfModels, int* types, int* models);
+    StatusType MakeComplaint(int typeID, int modelID, int t);
+    // returns the best seller of typeID
+    //if typeID=0, returns system's best seller
+    StatusType GetBestSellerModelByType(int typeID, int * modelID);
+    // returns system's m lowest graded models
+    StatusType GetWorstModels(int numOfModels, int *types, int *models);
 };
 
 #endif 

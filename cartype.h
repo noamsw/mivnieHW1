@@ -7,10 +7,10 @@
 
 class CarType
 {
+public:
     AVLTree<Model>* models;
     int type;
-    AVLTree<Model>::Node* mostSold;
-public:
+
     // constructor
     CarType(int type, int numOfModels);
     ~CarType();
@@ -21,8 +21,8 @@ public:
     bool operator<(const CarType& cartype);
     bool operator>(const CarType& cartype);
     bool operator==(const CarType& cartype);
-    void* addModel(int model_num, int grade, int numSold);
-    void* removeModel(int model_num);
+    void addModel(int model_num, int grade, int numSold);
+    void removeModel(int model_num);
 };
 
 #endif

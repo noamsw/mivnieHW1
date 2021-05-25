@@ -789,7 +789,7 @@ void AVLTree<T>::setNodesRoot(AVLTree<T>::Node* node)
 
 //creates an AVLTree from sorted array
 template<typename T>
-AVLTree<T>* arrToAVLTree(T arr[], int start, int end)
+AVLTree<T>* AVLTree<T>::arrToAVLTree(T arr[], int start, int end)
 { 
 	//turns the sorted array to linked nodes
 	typename AVLTree<T>::Node* node = AVLTree<T>::arrToNodesTree(arr, start, end);
@@ -819,9 +819,10 @@ int main()
 	AVLTree<Model>* models = new AVLTree<Model>();
 	return 0;
 } 
+*/
 
 
-
+/*
 int main() {
 
   // Allocate an array to keep track of the data we
