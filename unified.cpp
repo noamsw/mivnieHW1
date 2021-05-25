@@ -66,8 +66,6 @@ public:
   	int getHeight();
   	//std::exception insert(const T& t);
   	bool insert(const T& t);
-  	//std::exception insert(const T& t);
-  	bool insert(T& t);
   	//returns lowest value
   	T getLowestValue();
   	//returns highest value
@@ -78,8 +76,6 @@ public:
   	AVLTree<T>::Node* getHighest();
   	//std::exception remove(const T& t);
   	bool remove(const T& t);
-  	//std::exception remove(const T& t);
-  	bool remove(T& t);
 	// returns a pointer to highest node
   	void print();
 	//turns sorted array of <T> elements to a Nodes Tree
@@ -104,10 +100,8 @@ public:
 	// nullptr if not in tree
 	Node *findNode(const T& t);
 	// Rotate the subtree left.
-	Node *findNode(T& t);
-	// Rotate the subtree left.
 	void rotateLeft(Node *n);
-	// Rotate the subtree left.
+	// Rotate the subtree right.
 	void rotateRight(Node *n);
 	// Set the root.
 	void setRoot(Node *n);
@@ -142,24 +136,28 @@ public:
 class CarType
 {
 public:
+    // tree of the models of type
     AVLTree<Model>* models;
+    // type id
     int type;
+    // a pointer to the best seller of type
+    AVLTree<Model>::Node* best_seller;
 public:
     // constructor
     CarType(int type, int numOfModels);
-	CarType(CarType& cartype);
+    CarType(CarType& cartype);
     ~CarType();
     // returns the model number of the best seller
-    int getBestSeller();
-    // returns a pointer to the highest selling model
+    int getBestSeller() const;
+    // returns a pointer to the best seller
     AVLTree<Model>::Node* getMostSold();
     // comparing method between to cartypes
     // detertmined by typeid
     bool operator<(const CarType& cartype);
     // instantiate operator=
-    CarType& operator=(CarType& cartype) const;
-    bool operator>(const CarType& cartype) const;
-    bool operator==(const CarType& cartype) const;
+    CarType& operator=(CarType& cartype);
+    bool operator>(const CarType& cartype);
+    bool operator==(const CarType& cartype);
     bool addModel(int model_num, int grade, int numSold);
     bool removeModel(int model_num);
 };
@@ -174,8 +172,11 @@ class DSW
     AVLTree<CarType>* zerostree;
     // tree of models by grade
     AVLTree<Model>* gradedmodels;
-    // a pointer to the systems best selling model
-    AVLTree<Model>::Node* bestseller;
+    // a tree with the systems best sellers
+    // it will simply contain one model for each type
+    // but will not update with complaints
+    // and so the grade will be representative of sales.
+    AVLTree<Model>* bestsellers;
 
     DSW();
     ~DSW();
@@ -198,7 +199,7 @@ class DSW
     StatusType GetWorstModels(int numOfModels, int *types, int *models);
 };
 
-
+// paramterized Constructor.
 template<typename T>
 AVLTree<T>::Node::Node(T val) {
   data = val;
@@ -411,26 +412,6 @@ typename AVLTree<T>::Node *AVLTree<T>::findNode(const T& data) {
   }
   return temp;
 }
-// Find the node containing the data.
-template<typename T>
-typename AVLTree<T>::Node *AVLTree<T>::findNode(T& data) {
-  // While nodes remain, if we found the right
-  // node, exit the loop. If the value we want
-  // is less than the current, check the left
-  // subtree, otherwise, the right.
-  Node *temp = root;
-  while (temp != nullptr) {
-	if (data == temp->getData())
-	  break;
-	else{
-		if (data < temp->getData())
-	  		temp = temp->getLeftChild();
-		else
-	  		temp = temp->getRightChild();
-	}
-  }
-  return temp;
-}
 
 // Get the tree's height.
 template <typename T>
@@ -506,271 +487,9 @@ bool AVLTree<T>::insert(const T& t) {
   return true;
 }
 
-// Insert the value into the tree.
-template <typename T>
-bool AVLTree<T>::insert(T& t) {
-  // If the tree is empty, add the new node as the root.
-  if (root == nullptr){
-	 root = new Node(t);
-	 lowest = root;
-	 highest = root; 
-  }
-  // Otherwise, we need to find the insertion point.
-  else {
-	// Starting at the tree root search for the
-	// insertion point, until we have added the new node.
-	Node *added_node = nullptr;
-	Node *temp = root;
-	while (temp != nullptr && added_node == nullptr) {
-	  // If the value is less than the current
-	  // node's value, go left. If there isn't a
-	  // left subtree, insert the node, otherwise,
-	  // it is next to check.
-	  if (t < temp->getData()) {
-		if (temp->getLeftChild() == nullptr) {
-		  added_node = temp->setLeftChild(new Node(t));
-		  if(lowest!=nullptr){
-			if(t < lowest->getData())
-		  		lowest = added_node;
-		  }
-		  else lowest = added_node;
-		}
-    	else
-		  temp = temp->getLeftChild();
-		}
-	  // Otherwise, if the value is greater than
-	  // the current node's value, go right. If
-	  // there isn't a right subtree, insert the
-	  // node, otherwise, it is next to check.
-	  else if (t > temp->getData()) {
-		if (temp->getRightChild() == nullptr) {
-		  added_node = temp->setRightChild(new Node(t));
-		  if(highest != nullptr){
-			  if(t > highest->getData())
-			  	highest = added_node;
-		  }
-		  else highest = added_node;
-		} 
-    	else
-		  temp = temp->getRightChild();
-		}
-		// Otherwise, the value is already in the
-		// tree so abort.
-    	else
-		//should update to Std::exception
-			return false;
-	}
-	// From the new node upwards to the root,
-	// updated the height and make sure the
-	// subtree is balanced.
-	temp = added_node;
-	while(temp != nullptr) {
-	  temp->updateHeight();
-	  balanceAtNode(temp);
-	  temp = temp->getParent();
-	} 
-  }
-  return true;
-}
-
 // Remove the value from the tree.
 template <typename T>
 bool AVLTree<T>::remove(const T& t) {
-	// Find the node to delete and if none, exit.
-	Node *toBeRemoved = findNode(t);
-	if (toBeRemoved == nullptr){
-		//should be std::exception
-		return false;
-	}
-	// Get the parent and set the side the node is
-	// on of the parent.
-	enum {left, right} side;
-	Node *p = toBeRemoved->getParent();
-	//enum is right also if the node is a root
-	if (p != nullptr && p->getLeftChild() == toBeRemoved)
-		side = left;
-	else
-		side = right;
-	// If the node to be removed doesn't have a left
-	// subtree, check it's right subtree to figure
-	// out our next move.
-	if (toBeRemoved->getLeftChild() == nullptr){
-			// If we don't have any subtrees, we are the
-			// leaf so our parent doesn't need us.
-			if (toBeRemoved->getRightChild() == nullptr) {
-				// If we don't have a parent, the tree is now
-				// empty so change the root to null and delete
-				// our node.
-				if (p == nullptr) {
-					setRoot(nullptr);
-					delete toBeRemoved;
-					lowest = nullptr;
-					highest = nullptr;
-				}
-				// Otherwise, change the parent so it doesn't
-				// point to us, delete ourself, update the
-				// parent's height, and rebalance the tree. 
-				//if there is a node in the tree there is a lowest and highest value
-				//in order to be the highest or lowest value we must be a leaf
-				//check if we are the highest or lowest value
-				//update as needed
-				else {
-					if (side == left){
-						if(toBeRemoved->getData() == lowest->getData()){
-							lowest = lowest->getParent();
-						}
-						p->setLeftChild(nullptr);
-					}
-					else{
-						if(toBeRemoved->getData() == highest->getData()){
-							highest = highest->getParent();
-						}
-						p->setRightChild(nullptr);
-					} 
-					delete toBeRemoved;
-					p->updateHeight();
-					balanceAtNode(p);
-				} 
-			}
-			// Otherwise, there is a right subtree so use
-			// it to replace ourself.
-			else {
-				// If we don't have a parent, the tree is now
-				// the right subtree and delete our node.
-				if (p == nullptr) {
-					//deal with the case where the lowest value is the parent
-					lowest = toBeRemoved->getRightChild();
-					setRoot(toBeRemoved->getRightChild());
-					delete toBeRemoved;
-				}
-				// Otherwise, change the parent so it doesn't
-				// point to us, delete ourself, update the
-				// parent's height, and rebalance the tree.
-				else {
-					if (side == left)
-						p->setLeftChild(toBeRemoved->getRightChild());
-					else
-						p->setRightChild(toBeRemoved->getRightChild());
-					delete toBeRemoved;
-					p->updateHeight();
-					balanceAtNode(p);
-			} 
-			} 
-		}
-  	// Otherwise, we have a left subtree so check the
-	// right one of the node being removed to decide
-	// what is next. If there isn't a right subtree,
-	// the left one will replace ourself.
-	else 
-			if (toBeRemoved->getRightChild() ==nullptr) {
-				// If we don't have a parent, the tree is now
-				// the left subtree and delete our node.
-				if (p == nullptr) {
-					highest = toBeRemoved->getLeftChild();
-					setRoot(toBeRemoved->getLeftChild());
-					delete toBeRemoved;
-				}
-				// Otherwise, change the parent so it doesn't
-				// point to us, delete ourself, update the
-				// parent's height, and rebalance the tree.
-				else {
-					if(side == left)
-						p->setLeftChild(toBeRemoved->getLeftChild());
-					else
-						p->setRightChild(toBeRemoved->getLeftChild());
-					delete toBeRemoved;
-					p->updateHeight();
-					balanceAtNode(p);
-				}
-			}
-		// Otherwise, the node to remove has both subtrees
-		// so decide the best method to remove it.
-		else {
-		// Check the balance to see which way to go.
-		// If the left side is deeper, modify it.
-		Node *replacement;
-		Node *replacement_parent;
-		Node *temp_node;
-		int bal = toBeRemoved->getBalance();
-		if (bal > 0) {
-			// If the right subtree of the node's
-			// left subtree is empty, we can move the
-			// node's right subtree there.
-			if (toBeRemoved->getLeftChild()->
-				getRightChild() == nullptr) {
-				replacement = toBeRemoved->getLeftChild();
-				replacement->setRightChild(
-					toBeRemoved->getRightChild());
-				temp_node = replacement;
-
-			// Otherwise, find the right most empty subtree
-			// of our node's left subtree and it's
-			// parent. This is our replacement. Make it's
-			// parent point to it's left child instead
-			// of itself. It is now free to replace the
-			// deleted node. Copy both of the deleted
-			// nodes subtrees into the replacement leaving
-			// fixing up the parent below.
-		}
-		else {
-			replacement = toBeRemoved->
-				getLeftChild()->getRightChild();
-			while (replacement->getRightChild() !=nullptr)
-				replacement = replacement->getRightChild();
-			replacement_parent = replacement->getParent();
-			replacement_parent->setRightChild(replacement->getLeftChild());
-			temp_node = replacement_parent;
-			replacement->setLeftChild(toBeRemoved->getLeftChild());
-			replacement->setRightChild(toBeRemoved->getRightChild());
-		}
-		// Otherwise, we are going to modify the right
-		// side so, if the left subtree of the node's
-		// right subtree is empty, we can move the
-		// node's left subtree there.
-		} 
-		else if (toBeRemoved->getRightChild()->getLeftChild() == nullptr) {
-			replacement = toBeRemoved->getRightChild();
-			replacement->setLeftChild(toBeRemoved->getLeftChild());
-			temp_node = replacement;
-			// Otherwise, find the left most empty subtree
-			// of our node's right subtree and it's
-			// parent. This is our replacement. Make it's
-			// parent point to it's right child instead
-			// of itself. It is now free to replace the
-			// deleted node. Copy both of the deleted
-			// nodes subtrees into the replacement leaving
-			// fixing up the parent below.
-		} 
-		else {
-			replacement = toBeRemoved->getRightChild()->getLeftChild();
-			while (replacement->getLeftChild() !=nullptr)
-				replacement = replacement->getLeftChild();
-			replacement_parent = replacement->getParent();
-			replacement_parent->setLeftChild(replacement->getRightChild());
-			temp_node = replacement_parent;
-			replacement->setLeftChild(toBeRemoved->getLeftChild());
-			replacement->setRightChild(toBeRemoved->getRightChild());
-		}
-		// Fix the parent to point to the new root.
-		// If there isn't a parent, update the actual
-		// tree root. Otherwise, there is a parent so
-		// if we were the left subtree, update it,
-		// otherwise, the right. In all cases, delete
-		// the node and rebalance the tree.
-		if (p == nullptr)
-			setRoot(replacement);
-		else if (side == left)
-				p->setLeftChild(replacement);
-			else
-				p->setRightChild(replacement);
-		delete toBeRemoved;
-		balanceAtNode(temp_node);
-	}
-	return true;
-}
-// Remove the value from the tree.
-template <typename T>
-bool AVLTree<T>::remove(T& t) {
 	// Find the node to delete and if none, exit.
 	Node *toBeRemoved = findNode(t);
 	if (toBeRemoved == nullptr){
@@ -1354,11 +1073,11 @@ bool Model::operator<(const Model& other) const
     {
         // now, if the grade is equal, but the type is bigger
         // than it is still smaller, return true
-        if(type > other.type)
+        if(type < other.type)
             return true;
         // if the type is equal, check that the model is larger
         if(type == other.type)
-            if(model > other.model)
+            if(model < other.model)
                 return true;
     }
     // the grade is either smaller
@@ -1393,8 +1112,8 @@ void Model::setModel(int type, int model)
 
 std::ostream& operator<<(std::ostream& os, const Model& car)
 {
-    os << car.type << "." << car.model << "." << car.grade;
-    // os << car.model ;
+    // os << car.type << "." << car.model << "." << car.grade;
+    os << car.model ;
     return os;
 }
 
@@ -1405,21 +1124,20 @@ CarType::CarType(int type, int numOfModels):type(type)
     Model* modelsarr= new Model[numOfModels];
     for(int i=0; i<numOfModels; i++)
     {
-        // must be sorted
-        // the order of cars of same type and grade
-        // is that lower is higher
-        modelsarr[i].setModel(this->type, numOfModels-i-1);
+
+        modelsarr[i].setModel(this->type, i);
     }
     
     //initializing the models AVLTree
     //AVLTree<Model>* modelstree = new AVLTree<Model>();
-    this->models = new AVLTree<Model>();
+    this->models = new AVLTree<Model>;
     //turning the sorted array into AVLTree
     models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
 
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number
     // which is defined as the best selling model at initialization
+    best_seller = models->getHighest();
     delete[] modelsarr;
 }
 
@@ -1437,7 +1155,13 @@ CarType::~CarType()
 // returns pointer to most sold model
 AVLTree<Model>::Node* CarType::getMostSold()
 {
-    return models->getHighest();
+    return best_seller;
+}
+
+// returns the model number of the best seller
+int CarType::getBestSeller() const
+{
+    return best_seller->data.model;
 }
 
 // copy assignment operator
@@ -1448,19 +1172,19 @@ CarType& CarType::operator=(CarType& cartype)
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator<(const CarType& cartype) const
-{
-    return this->type > cartype.type;
-}
-
-//comparing operator, compares types by typeID
-bool CarType::operator>(const CarType& cartype) const
+bool CarType::operator<(const CarType& cartype)
 {
     return this->type < cartype.type;
 }
 
 //comparing operator, compares types by typeID
-bool CarType::operator==(const CarType& cartype) const
+bool CarType::operator>(const CarType& cartype)
+{
+    return this->type < cartype.type;
+}
+
+//comparing operator, compares types by typeID
+bool CarType::operator==(const CarType& cartype)
 {
     return this->type == cartype.type;
 }
@@ -1477,12 +1201,15 @@ bool CarType::removeModel(int model_num)
     return(this->models->remove(model_to_delete));
 }
 
+// default constructer
+// initializes all trees to empty trees
+// bestseller to nullptr
 DSW::DSW()
 {
     typestree = new AVLTree<CarType>();
     zerostree = new AVLTree<CarType>();
     gradedmodels = new AVLTree<Model>();
-    bestseller = nullptr;
+    bestsellers = new AVLTree<Model>();
 }
 
 // destructor
@@ -1492,6 +1219,7 @@ DSW::~DSW()
     delete typestree;
     delete zerostree;
     delete gradedmodels;
+    delete bestsellers;
 }
 
 
@@ -1525,10 +1253,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
         delete to_insert;
         return ALLOCATION_ERROR;
     }
-    if (bestseller == nullptr)
-        bestseller = to_insert->getMostSold();
-    if(bestseller->data < (to_insert->getMostSold())->data)
-        bestseller = to_insert->getMostSold();
+    bestsellers->insert(Model(typeId,0,0,0));
     CarType* zeroes_insert;
     try
     {
@@ -1556,7 +1281,6 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
 }
 
 // removes a car type from the system
-// we must check how the mostSold node is update in cartype
 StatusType DSW::removeCarType(int typeId)
 {
     if(typeId <= 0)
@@ -1570,31 +1294,24 @@ StatusType DSW::removeCarType(int typeId)
     // if we are here then the car was in the tree
     AVLTree<CarType>::Node* node_to_remove = typestree->findNode(to_remove);
     assert(node_to_remove != nullptr);
+    // remove from the bestsellers tree
+    // in order to do so we will find the relevent information
+    // from the typestree node
+    int grade = node_to_remove->data.best_seller->data.numSold*10;
+    int model = node_to_remove->data.best_seller->data.model;
+    // remove from the bestsellers tree
+    bestsellers->remove(Model(typeId, model, grade, grade/10));
+    // best seller will be updated automatically as highest node 
+    // of the tree
     while(node_to_remove->data.models->root != nullptr)
     {
         // remove the model from gradedmodels
-        // no need to check if whats actually there
+        // no need to check whats actually there
         gradedmodels->remove(node_to_remove->data.models->root->data);
         // remove the model from the typestree tree node
         node_to_remove->data.models->remove(node_to_remove->data.models->root->data);
     }
     typestree->remove(to_remove);
-    // chech the state of the highest seller
-    if(gradedmodels != nullptr)
-    {   
-        // if the car is in graded models than it has sold a model.
-        // therefore it is of course a higher seller than zerosTree
-        bestseller = gradedmodels->getHighest();
-    }
-    else if(gradedmodels != nullptr)
-        {
-            // if there are no gradedmodels
-            // there are no sold models
-            // therefor, by definition the best model is lowest model of lowest type
-            // i think that the highest is actully defined opposite of definition
-            bestseller = typestree->getHighest()->data.getMostSold();
-        }
-    bestseller = nullptr;
     return SUCCESS;
 }
 
@@ -1607,12 +1324,12 @@ StatusType DSW::sellCarr(int typeId, int modelId)
         return INVALID_INPUT;
     CarType finder(typeId , 1);
     // check that the type was in the tree
-    AVLTree<CarType>::Node* type_to_update = typestree->findNode(finder);
-    if(!type_to_update)
+    AVLTree<CarType>::Node* tree_of_models_to_update = typestree->findNode(finder);
+    if(!tree_of_models_to_update)
         return FAILURE;
     // check that the model was in the tree
     AVLTree<Model>::Node* model_to_update 
-        = type_to_update->data.models->findNode(Model(typeId,modelId));
+        = tree_of_models_to_update->data.models->findNode(Model(typeId,modelId));
     if(!model_to_update)
         return FAILURE;
     // create an updated model to insert
@@ -1620,19 +1337,64 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     int sold = model_to_update->data.numSold+1;
     Model model_to_insert = Model(typeId, modelId, grade, sold);
     // remove and then insert the updated model
-    type_to_update->data.models->remove(Model(typeId,modelId));
+    tree_of_models_to_update->data.models->remove(Model(typeId,modelId));
     try
     {
-        type_to_update->data.models->insert(model_to_insert);
+        tree_of_models_to_update->data.models->insert(model_to_insert);
     }
     catch (std::exception& e)
     {
         // need to decide what to do if a bad allocation happens
         throw ALLOCATION_ERROR;
     }
+    // check if this is now the best seller
+    // if its a null pointer it was and remains best seller
+    if(tree_of_models_to_update->data.best_seller == nullptr)
+    {
+        //update the bestsellers tree
+        bestsellers->remove(Model(typeId,modelId,sold-1,0));
+        bestsellers-> insert(Model(typeId,modelId,sold,0));
+        //update the best seller in the tree of models
+        tree_of_models_to_update->data.best_seller 
+            = tree_of_models_to_update->data.models->findNode(model_to_insert);
+    }    
+    // if it was not a null pointer than check
+    // if the current model has now sold more models
+    else
+    {
+        if(tree_of_models_to_update->data.best_seller->data.numSold < sold)
+        {
+            // update the bestsellers tree
+            int model = tree_of_models_to_update->data.best_seller->data.model;
+            int grade = tree_of_models_to_update->data.best_seller->data.numSold;
+            bestsellers->remove(Model(typeId,model,grade,0));
+            bestsellers-> insert(Model(typeId,modelId,sold,0));
+            // update the tree of models best seller
+            tree_of_models_to_update->data.best_seller 
+            = tree_of_models_to_update->data.models->findNode(model_to_insert);
+
+        }
+        // final case - equal
+        else if(tree_of_models_to_update->data.best_seller->data.numSold == sold)
+        {
+            
+            if(tree_of_models_to_update->data.best_seller->data.model >= modelId)
+            {
+                // update the bestsellers tree
+                int model = tree_of_models_to_update->data.best_seller->data.model;
+                int grade = tree_of_models_to_update->data.best_seller->data.numSold;
+                bestsellers->remove(Model(typeId,model,grade,0));
+                bestsellers-> insert(Model(typeId,modelId,sold,0));
+                // update the tree of models best seller
+                tree_of_models_to_update->data.best_seller 
+                = tree_of_models_to_update->data.models->findNode(model_to_insert);
+            }
+        }
+           
+    } 
     // find and remove from zerostree, checking that its there
-    if(zerostree->findNode(finder))
-        zerostree->findNode(finder)->data.models->remove(model_to_insert);
+    assert(zerostree->findNode(finder));
+    zerostree->findNode(finder)->data.models->remove(model_to_insert);
     // remove and reinsert in gradedmodels
     gradedmodels->remove(model_to_insert);
     try
@@ -1642,13 +1404,6 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     catch (std::exception& e)
     {
         throw ALLOCATION_ERROR;
-    }
-    // check if we need to update bestseller
-    // make sure that the grade is positive. 
-    if(grade>0)
-    {
-        if(gradedmodels->getHighest()->data==model_to_insert)
-                bestseller = gradedmodels->getHighest();
     }
     return SUCCESS;  
 }
@@ -1662,7 +1417,7 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     }
     
     // create a cartype with the typeID
-    CarType find_ct = CarType(typeID , 1);
+    CarType find_ct(typeID , 1);
 
     // finding the type at the typestree
     AVLTree<CarType>::Node* ct_to_complaint = typestree->findNode(find_ct);
@@ -1724,12 +1479,12 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
     //if typeID=0, we should return system's best seller
     if (typeID==0)
     {
-        *modelID = bestseller->data.model;
+        *modelID = bestsellers->getHighest()->data.model;
         return SUCCESS;
     }
 
     //check if typeID is in the system
-    CarType ct_find = CarType (typeID, 1);
+    CarType ct_find(typeID, 1);
     AVLTree<CarType>::Node* ct_node = typestree->findNode(ct_find);
     if (ct_node==nullptr)
     {
@@ -1742,13 +1497,7 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
     return SUCCESS;
 }
 
-int main()
+StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 {
-	DSW ds;
-	ds.addCarType(3,2);
-	ds.addCarType(2,3);
-	std::cout << ds.bestseller->data << std::endl;
-	ds.addCarType(1,3);
-	std::cout << ds.bestseller->data << std::endl;
-	
+
 }

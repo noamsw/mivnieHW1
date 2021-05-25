@@ -46,18 +46,18 @@ bool Model::operator<(const Model& other)
     // otherwise check if the grade is equal
     if(grade == other.grade)
     {
-        // now, if the grade is equal, but the type is bigger
+        // now, if the grade is equal, but the type is smaller
         // than it is still smaller, return true
-        if(type > other.type)
+        if(type < other.type)
             return true;
-        // if the type is equal, check that the model is larger
+        // if the type is equal, check that the model is smaller
         if(type == other.type)
-            if(model > other.model)
+            if(model < other.model)
                 return true;
     }
-    // the grade is either smaller
-    // or the grade is equal but the type is smaller
-    // or the grade and type are equal but the model is smaller
+    // the grade is either larger
+    // or the grade is equal but the type is larger
+    // or the grade and type are equal but the model is larger
     // in all of these cases the car is a better model
     // return false
     return false; 

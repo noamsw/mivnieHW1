@@ -13,7 +13,7 @@ DSW::DSW()
     typestree = new AVLTree<CarType>();
     zerostree = new AVLTree<CarType>();
     gradedmodels = new AVLTree<Model>();
-    bestsellers = new AVLTree<Model>();
+    bestsellers = new AVLTree<MostSold>();
 }
 
 // destructor
@@ -57,7 +57,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
         delete to_insert;
         return ALLOCATION_ERROR;
     }
-    bestsellers->insert(Model(typeId,0,0,0));
+    bestsellers->insert(MostSold(typeId,0,0));
     CarType* zeroes_insert;
     try
     {
@@ -89,7 +89,7 @@ StatusType DSW::removeCarType(int typeId)
 {
     if(typeId <= 0)
         return INVALID_INPUT;
-    CarType to_remove = CarType(typeId , 1);
+    CarType to_remove(typeId , 1);
     if(!zerostree->remove(to_remove))
     {
         // if this is false, the type was not in the tree
@@ -104,7 +104,7 @@ StatusType DSW::removeCarType(int typeId)
     int grade = node_to_remove->data.best_seller->data.numSold*10;
     int model = node_to_remove->data.best_seller->data.model;
     // remove from the bestsellers tree
-    bestsellers->remove(Model(typeId, model, grade, grade/10));
+    bestsellers->remove(MostSold(typeId, model, grade/10));
     // best seller will be updated automatically as highest node 
     // of the tree
     while(node_to_remove->data.models->root != nullptr)
@@ -126,7 +126,7 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     // check arguments
     if(typeId <= 0 || modelId <=0)
         return INVALID_INPUT;
-    CarType finder = CarType(typeId , 1);
+    CarType finder(typeId , 1);
     // check that the type was in the tree
     AVLTree<CarType>::Node* tree_of_models_to_update = typestree->findNode(finder);
     if(!tree_of_models_to_update)
@@ -156,8 +156,8 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     if(tree_of_models_to_update->data.best_seller == nullptr)
     {
         //update the bestsellers tree
-        bestsellers->remove(Model(typeId,modelId,sold-1,0));
-        bestsellers-> insert(Model(typeId,modelId,sold,0));
+        bestsellers->remove(MostSold(typeId,modelId,sold-1));
+        bestsellers-> insert(MostSold(typeId,modelId,sold));
         //update the best seller in the tree of models
         tree_of_models_to_update->data.best_seller 
             = tree_of_models_to_update->data.models->findNode(model_to_insert);
@@ -170,9 +170,9 @@ StatusType DSW::sellCarr(int typeId, int modelId)
         {
             // update the bestsellers tree
             int model = tree_of_models_to_update->data.best_seller->data.model;
-            int grade = tree_of_models_to_update->data.best_seller->data.numSold;
-            bestsellers->remove(Model(typeId,model,grade,0));
-            bestsellers-> insert(Model(typeId,modelId,sold,0));
+            int old_sold = tree_of_models_to_update->data.best_seller->data.numSold;
+            bestsellers->remove(MostSold(typeId,model,old_sold));
+            bestsellers-> insert(MostSold(typeId,modelId,sold));
             // update the tree of models best seller
             tree_of_models_to_update->data.best_seller 
             = tree_of_models_to_update->data.models->findNode(model_to_insert);
@@ -186,9 +186,9 @@ StatusType DSW::sellCarr(int typeId, int modelId)
             {
                 // update the bestsellers tree
                 int model = tree_of_models_to_update->data.best_seller->data.model;
-                int grade = tree_of_models_to_update->data.best_seller->data.numSold;
-                bestsellers->remove(Model(typeId,model,grade,0));
-                bestsellers-> insert(Model(typeId,modelId,sold,0));
+                int old_sold = tree_of_models_to_update->data.best_seller->data.numSold;
+                bestsellers->remove(MostSold(typeId,model,old_sold));
+                bestsellers-> insert(MostSold(typeId,modelId,sold));
                 // update the tree of models best seller
                 tree_of_models_to_update->data.best_seller 
                 = tree_of_models_to_update->data.models->findNode(model_to_insert);
@@ -221,7 +221,7 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     }
     
     // create a cartype with the typeID
-    CarType find_ct = CarType(typeID , 1);
+    CarType find_ct(typeID , 1);
 
     // finding the type at the typestree
     AVLTree<CarType>::Node* ct_to_complaint = typestree->findNode(find_ct);
@@ -283,7 +283,7 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
     //if typeID=0, we should return system's best seller
     if (typeID==0)
     {
-        *modelID = bestsellers->data.model;
+        *modelID = bestsellers->getHighest()->data.model;
         return SUCCESS;
     }
 

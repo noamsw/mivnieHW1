@@ -3,9 +3,11 @@
 
 #include "AVL.h"
 #include "cartype.h"
-#include "model.h" 
+#include "mostsold.h" 
+#include "model.h"
 #include "iostream"
 #include "library.h"
+
 class DSW
 {
     public:
@@ -17,10 +19,9 @@ class DSW
     // tree of models by grade
     AVLTree<Model>* gradedmodels;
     // a tree with the systems best sellers
-    // it will simply contain one model for each type
-    // but will not update with complaints
-    // and so the grade will be representative of sales.
-    AVLTree<Model>* bestsellers;
+    // it is of type mostsold class
+    // this contains type, model, numsold
+    AVLTree<MostSold>* bestsellers;
 
     DSW();
     ~DSW();
