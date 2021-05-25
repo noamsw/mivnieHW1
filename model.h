@@ -9,7 +9,7 @@ public:
     int model;
     int grade=0;
     int numSold=0;
-public:
+
     Model();
     Model(int type, int model);
     Model(int type, int model, int grade, int numSold);

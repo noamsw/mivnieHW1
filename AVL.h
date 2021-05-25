@@ -11,7 +11,7 @@ class AVLTree
 public:
     class Node
     {
-		public: //was in line 22
+		public:
         //data, templated
         T data;
         Node *right_child;
@@ -19,7 +19,7 @@ public:
         Node *parent;
 		//height from bottom of tree
         int height;
-		// public was here
+
     	//default constructor
     	//Node();
 		// Constructor initializing the data.
@@ -55,7 +55,7 @@ public:
   	Node* lowest;
   	//a pointer to the node with the highest value
   	Node* highest;
-public:
+
   	//default constructor for empty tree
   	AVLTree();
   	//parametrized constructor with one value t 

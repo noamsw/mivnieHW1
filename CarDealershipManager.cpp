@@ -25,6 +25,7 @@ DSW::~DSW()
     delete gradedmodels;
 }
 
+
 // adds a cartype to the system. 
 // inserting it into the typetree, and zeroestree
 StatusType DSW::addCarType(int typeId, int numOfModels)
@@ -183,4 +184,96 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     return SUCCESS;  
 }
 
+StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
+{
+    // checking input (in wraped fuction, check if DS==NULL)
+    if (typeID < 0 || modelID <= 0)
+    {
+        return INVALID_INPUT;
+    }
+    
+    // create a cartype with the typeID
+    CarType find_ct = CarType(typeID , 1);
 
+    // finding the type at the typestree
+    AVLTree<CarType>::Node* ct_to_complaint = typestree->findNode(find_ct);
+    if (ct_to_complaint==nullptr) // if the cartype is not in the typestree
+    {
+        return FAILURE;
+    }
+
+    Model find_m = Model(typeID, modelID);
+    // finding the model at the type's models tree
+    AVLTree<Model>::Node* m_to_complaint = ct_to_complaint->data.models->findNode(find_m);
+    if (m_to_complaint==nullptr) // if the model doesnt exist
+    {
+        return FAILURE;
+    }
+
+    // update model's grade in the typestree
+    int original_grade = m_to_complaint->data.grade;
+    int complaint_grade = t / 100;
+    m_to_complaint->data.grade = m_to_complaint->data.grade - complaint_grade;
+
+    // initialize the model we want to insert to models tree
+    Model model_to_add= Model(typeID, modelID, m_to_complaint->data.grade, m_to_complaint->data.numSold);
+
+    // check if the type is in the zerostree
+    AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+    if (ct_node_zeros != nullptr)
+    {
+        // check if the model is in the ct_node_zeros
+        AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
+        if (m_node_zeros != nullptr)
+        {
+            // remove the model from the zeros tree
+            ct_node_zeros->data.removeModel(modelID);
+            // insert te model to the grade tree
+            gradedmodels->insert(model_to_add);
+            return SUCCESS;
+        }
+    }
+
+    // if the model isnt in the zeros, it must be in the grademodels
+    // find the model in the gradesmodel 
+    Model model_to_remove = Model(typeID, modelID, original_grade, m_to_complaint->data.numSold);
+    //check if model_to_remove is in models tree
+    gradedmodels->remove(model_to_remove);
+    gradedmodels->insert(model_to_add);
+    return SUCCESS;
+}
+
+StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
+{
+    //checking input
+    //if typeID==0 && DS is empty, we should throe FAILURE
+    if (typeID<0)
+    {
+        return INVALID_INPUT;
+    }
+
+    //if typeID=0, we should return system's best seller
+    if (typeID==0)
+    {
+        *modelID = bestseller->data.model;
+        return SUCCESS;
+    }
+
+    //check if typeID is in the system
+    CarType ct_find = CarType (typeID, 1);
+    AVLTree<CarType>::Node* ct_node = typestree->findNode(ct_find);
+    if (ct_node==nullptr)
+    {
+        //the typeID is not in the system
+        return FAILURE;
+    }
+
+    //the typeId is in the system
+    *modelID = ct_node->data.getBestSeller();
+    return SUCCESS;
+}
+
+StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
+{
+
+}
