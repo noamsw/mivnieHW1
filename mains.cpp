@@ -79,3 +79,80 @@ int main()
 	return 0;
     */
 } 
+
+
+int main() {
+
+  // Allocate an array to keep track of the data we
+  // add to the tree, initialize the random numbers,
+  // allocate an empty tree.
+  Model modelsarr[10];
+  modelsarr[0].setModel(2, 21);
+  modelsarr[1].setModel(2, 34);
+  modelsarr[2].setModel(2, 13);
+  modelsarr[3].setModel(3, 0);
+  modelsarr[4].setModel(2, 3);
+  modelsarr[5].setModel(2, 6);
+  modelsarr[6].setModel(2, 8);
+  modelsarr[7].setModel(2, 17);
+  modelsarr[8].setModel(1, 42);
+  modelsarr[9].setModel(2, 27);
+  AVLTree<Model> *tree = new AVLTree<Model>();
+
+  for (int i = 0; i < 10; i++) 
+  { 
+    tree->insert(modelsarr[i]);
+	std::cout << "Adding " << modelsarr[i] << std::endl;
+	tree->print();
+  } // for
+
+
+  // Remove each of the numbers by displaying the
+  // number being removed, performing the removal,
+  // and displaying the current state of the tree.
+  for (int i = 0; i < 10; i++) {
+	std::cout << "Removing " << modelsarr[i] << std::endl;
+	tree->remove(modelsarr[i]);
+	tree->print();
+  } // for
+  return 0;
+}
+
+
+// used to test mostsold
+int main() {
+
+  // Allocate an array to keep track of the data we
+  // add to the tree, initialize the random numbers,
+  // allocate an empty tree.
+  MostSold modelsarr[10];
+  modelsarr[3].set(3,4,0);
+  modelsarr[4].set(4,5,3);
+  modelsarr[5].set(5,3,6);
+  modelsarr[6].set(7,8,8);
+  modelsarr[0].set(1,3,10);
+  modelsarr[2].set(6,2,13);
+  modelsarr[7].set(8,9,17);
+  modelsarr[9].set(0,6,27);
+  modelsarr[1].set(2,2,34);
+  modelsarr[8].set(9,5,42);
+  AVLTree<MostSold> *tree = new AVLTree<MostSold>();
+
+  for (int i = 0; i < 10; i++) 
+  { 
+    tree->insert(modelsarr[i]);
+	std::cout << "Adding " << modelsarr[i] << std::endl;
+	tree->print();
+  } // for
+
+
+  // Remove each of the numbers by displaying the
+  // number being removed, performing the removal,
+  // and displaying the current state of the tree.
+  for (int i = 0; i < 10; i++) {
+	std::cout << "Removing " << modelsarr[i] << std::endl;
+	tree->remove(modelsarr[i]);
+	tree->print();
+  } // for
+  return 0;
+}

@@ -4,7 +4,14 @@
 MostSold::MostSold():type(0), model(0), numsold(0){};
 
 // constuctor for Model. grade is initialized to 0 
-MostSold::MostSold(int type, int model, int numsold):type(type),numsold(numsold){};
+MostSold::MostSold(int type, int model, int numsold):type(type),model(model),numsold(numsold){};
+
+void MostSold::set(int type, int model, int numsold)
+{
+    this->type = type;
+    this->model = model;
+    this->numsold = numsold;
+}
 
 // comparing operator, returns true if equal
 // cars are equal to one another if
@@ -99,6 +106,6 @@ bool MostSold::operator>(const MostSold& other) const
 std::ostream& operator<<(std::ostream& os, const MostSold& car)
 {
     // os << car.type << "." << car.model << "." << car.numsold;
-    os << car.model ;
+    os << car.type ;
     return os;
 }

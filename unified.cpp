@@ -133,6 +133,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Model& car);
 };
 
+
 class CarType
 {
 public:
@@ -164,6 +165,7 @@ public:
     bool removeModel(int model_num);
 };
 
+
 class MostSold{
 public:
     int type;
@@ -174,6 +176,7 @@ public:
     MostSold(int type, int model, int numsold);
     MostSold(const MostSold& other) = default;
     MostSold& operator=(const MostSold& other) = default;
+    void set(int type, int model, int numsold);
     bool operator==(const MostSold& other) const;
     bool operator>(const MostSold& other) const;
     bool operator<(const MostSold& other) const;
@@ -218,6 +221,7 @@ class DSW
     // returns system's m lowest graded models
     StatusType GetWorstModels(int numOfModels, int *types, int *models);
 };
+
 
 // paramterized Constructor.
 template<typename T>
@@ -1132,10 +1136,11 @@ void Model::setModel(int type, int model)
 
 std::ostream& operator<<(std::ostream& os, const Model& car)
 {
-    // os << car.type << "." << car.model << "." << car.grade;
-    os << car.model ;
+    os << car.type << "." << car.model << "." << car.grade;
+    //os << car.model ;
     return os;
 }
+
 
 // default constructor
 CarType::CarType()
@@ -1165,7 +1170,7 @@ CarType::CarType(int type, int numOfModels):type(type)
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number
     // which is defined as the best selling model at initialization
-    best_seller = models->getHighest();
+    best_seller = models->lowest;
     delete[] modelsarr;
 }
 
@@ -1209,7 +1214,7 @@ bool CarType::operator<(const CarType& cartype) const
 //comparing operator, compares types by typeID
 bool CarType::operator>(const CarType& cartype) const
 {
-    return this->type < cartype.type;
+    return this->type > cartype.type;
 }
 
 //comparing operator, compares types by typeID
@@ -1230,11 +1235,19 @@ bool CarType::removeModel(int model_num)
     return(this->models->remove(model_to_delete));
 }
 
+
 //default constructor for model. all fields initialized to 0
 MostSold::MostSold():type(0), model(0), numsold(0){};
 
 // constuctor for Model. grade is initialized to 0 
-MostSold::MostSold(int type, int model, int numsold):type(type),numsold(numsold){};
+MostSold::MostSold(int type, int model, int numsold):type(type),model(model),numsold(numsold){};
+
+void MostSold::set(int type, int model, int numsold)
+{
+    this->type = type;
+    this->model = model;
+    this->numsold = numsold;
+}
 
 // comparing operator, returns true if equal
 // cars are equal to one another if
@@ -1328,8 +1341,8 @@ bool MostSold::operator>(const MostSold& other) const
 
 std::ostream& operator<<(std::ostream& os, const MostSold& car)
 {
-    // os << car.type << "." << car.model << "." << car.numsold;
-    os << car.model ;
+    os << car.type << "." << car.model << "." << car.numsold;
+    //os << car.model ;
     return os;
 }
 
@@ -1633,3 +1646,18 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 {
   return ALLOCATION_ERROR;
 }
+
+
+
+int main() 
+{
+  DSW cd;
+  cd.addCarType(4,6);
+  cd.addCarType(3,4);
+  cd.addCarType(6,3);
+  cd.typestree->highest->data.models->print();
+  cd.typestree->lowest->data.models->print();
+  cd.bestsellers->print();
+  return 0;
+}
+

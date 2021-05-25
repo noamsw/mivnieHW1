@@ -34,6 +34,9 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     // check that the input is correct
     if( typeId<=0 || numOfModels<=0 )
         return INVALID_INPUT;
+    // check if the type is already inserted
+    if(typestree->findNode(CarType(typeId,1)))
+        return FAILURE;
     CarType* to_insert;
     try
     {
@@ -42,11 +45,6 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     catch (std::exception& e)
     {
         return ALLOCATION_ERROR;
-    }
-    if(typestree->findNode(*to_insert))
-    {
-        delete to_insert;
-        return FAILURE;
     }
     try
     {

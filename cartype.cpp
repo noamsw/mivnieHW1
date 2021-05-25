@@ -28,7 +28,7 @@ CarType::CarType(int type, int numOfModels):type(type)
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number
     // which is defined as the best selling model at initialization
-    best_seller = models->getHighest();
+    best_seller = models->lowest;
     delete[] modelsarr;
 }
 
@@ -73,7 +73,7 @@ bool CarType::operator<(const CarType& cartype) const
 //comparing operator, compares types by typeID
 bool CarType::operator>(const CarType& cartype) const
 {
-    return this->type < cartype.type;
+    return this->type > cartype.type;
 }
 
 //comparing operator, compares types by typeID

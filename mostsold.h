@@ -14,6 +14,7 @@ public:
     MostSold(int type, int model, int numsold);
     MostSold(const MostSold& other) = default;
     MostSold& operator=(const MostSold& other) = default;
+    void set(int type, int model, int numsold);
     bool operator==(const MostSold& other) const;
     bool operator>(const MostSold& other) const;
     bool operator<(const MostSold& other) const;
