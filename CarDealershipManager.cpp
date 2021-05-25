@@ -25,7 +25,7 @@ DSW::~DSW()
     delete gradedmodels;
 }
 
-/*
+
 // adds a cartype to the system. 
 // inserting it into the typetree, and zeroestree
 StatusType DSW::addCarType(int typeId, int numOfModels)
@@ -184,62 +184,71 @@ StatusType DSW::sellCarr(int typeId, int modelId)
     return SUCCESS;  
 }
 
-
-}
-*/
-
 StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
 {
-    // in wraped fuction, check if DS==NULL
-    // checking input 
+    // checking input (in wraped fuction, check if DS==NULL)
     if (typeID < 0 || modelID <= 0)
     {
         return INVALID_INPUT;
     }
     
-    //create a cartype with the typeID
-    CarType tmp_ct = CarType(typeID , 1);
+    // create a cartype with the typeID
+    CarType find_ct = CarType(typeID , 1);
 
-    //finding the type at the typestree
-    AVLTree<CarType>::Node* ct_node = typestree->findNode(tmp_ct); //what is the problem??
-    if (ct_node==nullptr) // if the cartype is not in the typestree
+    // finding the type at the typestree
+    AVLTree<CarType>::Node* ct_to_complaint = typestree->findNode(find_ct);
+    if (ct_to_complaint==nullptr) // if the cartype is not in the typestree
     {
         return FAILURE;
     }
 
-
-    Model tmp_m = Model(typeID, modelID); //should i use new?
-    //finding the model at the type's models tree
-    AVLTree<Model>::Node* m_node = ct_node->data.models->findNode(tmp_m)
-    if (tmp_m) // if the model doesnt exist
+    Model find_m = Model(typeID, modelID);
+    // finding the model at the type's models tree
+    AVLTree<Model>::Node* m_to_complaint = ct_to_complaint->data.models->findNode(find_m);
+    if (m_to_complaint==nullptr) // if the model doesnt exist
     {
-        //free curr_car_type?
         return FAILURE;
     }
 
-    //update model's grade
-    int original_grade = curr_model.grade;
-    int complaint_grade= t / 100;
-    curr_model.grade = curr_model.grade - complaint_grade ;
+    // update model's grade in the typestree
+    int original_grade = m_to_complaint->data.grade;
+    int complaint_grade = t / 100;
+    m_to_complaint->data.grade = m_to_complaint->data.grade - complaint_grade;
 
-    //check if the model is in the zerostree
-    CarType curr_car_type_zero = (*this).zerostree.findNode(typeID);
-    if (!null) //if the car is in the zeros tree
+    // initialize the model we want to insert to models tree
+    Model model_to_add= Model(typeID, modelID, m_to_complaint->data.grade, m_to_complaint->data.numSold);
+
+    // check if the type is in the zerostree
+    AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+    if (ct_node_zeros != nullptr)
     {
-        //remove the car from the zeros tree
-        //create a model with the new grade
-        //insert the model into grademodels
-        //free objects I created?
-        //return SUCCESS;
+        // check if the model is in the ct_node_zeros
+        AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
+        if (m_node_zeros != nullptr)
+        {
+            // remove the model from the zeros tree
+            ct_node_zeros->data.removeModel(modelID);
+            // insert te model to the grade tree
+            gradedmodels->insert(model_to_add);
+            return SUCCESS;
+        }
     }
 
-    //if the model isnt in the zeros, find it in the grademodels
-    Model curr_model_grades = (*this).gradedmodels->findNode(original_grade, typeID, modelID);
-    Model tmp = curr_model_grades ;
-    tmp.grade = curr_model.grade; //setting the tmp's grade to the new one
-    //remove curr_model_grades from grademodels
-    //insert tmp to grade models
-    //free objects
-    //return SUCCESS;
+    // if the model isnt in the zeros, it must be in the grademodels
+    // find the model in the gradesmodel 
+    Model model_to_remove = Model(typeID, modelID, original_grade, m_to_complaint->data.numSold);
+    //check if model_to_remove is in models tree
+    gradedmodels->remove(model_to_remove);
+    gradedmodels->insert(model_to_add);
+    return SUCCESS;
 }
 
+StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
+{
+
+}
+
+StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
+{
+    
+}
