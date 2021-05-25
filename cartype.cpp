@@ -15,7 +15,7 @@ CarType::CarType(int type, int numOfModels):type(type)
     //AVLTree<Model>* modelstree = new AVLTree<Model>();
     this->models = new AVLTree<Model>();
     //turning the sorted array into AVLTree
-    this->models= AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
+    models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
 
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number
@@ -28,17 +28,21 @@ CarType::~CarType()
 {
     //delete models;
 }
-
+// returns pointer to most sold model
+AVLTree<Model>::Node* CarType::getMostSold()
+{
+    return models->getHighest();
+}
 //comparing operator, compares types by typeID
 bool CarType::operator<(const CarType& cartype)
 {
-    return this->type < cartype.type;
+    return this->type > cartype.type;
 }
 
 //comparing operator, compares types by typeID
 bool CarType::operator>(const CarType& cartype)
 {
-    return this->type > cartype.type;
+    return this->type < cartype.type;
 }
 
 //comparing operator, compares types by typeID
@@ -47,22 +51,14 @@ bool CarType::operator==(const CarType& cartype)
     return this->type == cartype.type;
 }
 
-void CarType::addModel(int model_num, int grade, int numSold)
+bool CarType::addModel(int model_num, int grade, int numSold)
 {
     Model model_to_add= Model(this->type, model_num, grade, numSold);
-    this->models->insert(model_to_add);
-    //should I free model_to_add?
+    return(this->models->insert(model_to_add));
 }
 
-void CarType::removeModel(int model_num)
+bool CarType::removeModel(int model_num)
 {
     Model model_to_delete= Model(this->type, model_num);
-    this->models->remove(model_to_delete);
-    delete &model_to_delete;
-}
-
-int main()
-{
-    CarType ct = CarType(3,6);
-    return 0;
+    return(this->models->remove(model_to_delete));
 }

@@ -21,7 +21,7 @@ public:
         int height;
 
     	//default constructor
-    	Node();
+    	//Node();
 		// Constructor initializing the data.
 		Node(T t);
 		//destructor
@@ -48,7 +48,7 @@ public:
 		int updateHeight();
 		
     };
-
+public:
 	//a pointer to the root
   	Node *root;
  	//a pointer to the node with the lowest value
@@ -93,6 +93,7 @@ public:
 	//turns sorted array of <T> elements to an AVLTree
 	static AVLTree<T>* arrToAVLTree(T arr[], int start, int end);
 
+public:
   	// Balance the tree
 	void balanceAtNode(Node *n);
 	// returns a pointe to node containing the data.

@@ -6,7 +6,6 @@
 #include "model.h" 
 #include "iostream"
 #include "library.h"
-
 class DSW
 {
     public:
@@ -24,13 +23,13 @@ class DSW
     ~DSW();
     // adds a car type to the system
     // throws relevent exceptions
-    StatusType AddCarType(int typeID, int numOfModels);
+    StatusType addCarType(int typeId, int numOfModels);
     // removes a car type from the system
     // throws relevent exceptions
-    StatusType RemoveCarType(int typeID);
+    StatusType removeCarType(int typeId);
     // Sell a car of typeid, model id and updates system
     // throws relevent exceptions
-    StatusType SellCar(int typeID, int modelID);;
+    StatusType sellCarr(int typeId, int modelId);
     // files a complaint against a model
     // throws relevent exceptions
     StatusType MakeComplaint(int typeID, int modelID, int t);
