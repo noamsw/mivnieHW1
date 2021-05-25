@@ -819,9 +819,9 @@ int main()
 	AVLTree<Model>* models = new AVLTree<Model>();
 	return 0;
 } 
+*/
 
-
-
+/*
 int main() {
 
   // Allocate an array to keep track of the data we
@@ -849,6 +849,43 @@ int main() {
   for (int i = 0; i < 10; i++) {
 	std::cout << "Removing " << data[i] << std::endl;
 	tree->remove(data[i]);
+	tree->print();
+  } // for
+  return 0;
+}
+*/
+/*
+int main() {
+
+  // Allocate an array to keep track of the data we
+  // add to the tree, initialize the random numbers,
+  // allocate an empty tree.
+  Model modelsarr[10];
+  for(int i=0; i<10; i++)
+  {
+    modelsarr[i].setModel(2, i);
+  }
+  AVLTree<Model> *tree = new AVLTree<Model>();
+
+  // Insert 10 unique random numbers into the tree.
+  // For each number we are adding, attempt to insert
+  // a random number, until it works because it is
+  // unique. Afterwards, display the new number and
+  // the current state of the tree.
+  for (int i = 0; i < 10; i++) 
+  { 
+    tree->insert(modelsarr[i]);
+	std::cout << "Adding " << modelsarr[i] << std::endl;
+	tree->print();
+  } // for
+
+
+  // Remove each of the numbers by displaying the
+  // number being removed, performing the removal,
+  // and displaying the current state of the tree.
+  for (int i = 0; i < 10; i++) {
+	std::cout << "Removing " << modelsarr[i] << std::endl;
+	tree->remove(modelsarr[i]);
 	tree->print();
   } // for
   return 0;
