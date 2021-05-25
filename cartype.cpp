@@ -10,10 +10,10 @@ CarType::CarType(int type, int numOfModels):type(type)
     {
         modelsarr[i].setModel(this->type, i);
     }
-
+    
     //initializing the models AVLTree
-    // models = new AVLTree<Model>::AVLTree();
-    models = nullptr;
+    //AVLTree<Model>* modelstree = new AVLTree<Model>();
+    this->models = new AVLTree<Model>();
     //turning the sorted array into AVLTree
     // models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
 
@@ -26,7 +26,7 @@ CarType::CarType(int type, int numOfModels):type(type)
 //destructor for CarType, must delete models
 CarType::~CarType()
 {
-    delete models;
+    //delete models;
 }
 // returns pointer to most sold model
 AVLTree<Model>::Node* CarType::getMostSold()

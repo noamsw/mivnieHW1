@@ -67,19 +67,19 @@ int AVLTree<T>::Node::getHeight() {
 
 // Get the left subtree.
 template<typename T>
-typename AVLTree<T>::Node* AVLTree<T>::Node::getLeftChild() {
+typename AVLTree<T>::Node *AVLTree<T>::Node::getLeftChild() {
   return left_child;
 }
 
 // Get the right subtree.
 template<typename T>
-typename AVLTree<T>::Node* AVLTree<T>::Node::getRightChild() {
+typename AVLTree<T>::Node *AVLTree<T>::Node::getRightChild() {
   return right_child;
 }
 
 // Get the node's parent.
 template<typename T>
-typename AVLTree<T>::Node* AVLTree<T>::Node::getParent() {
+typename AVLTree<T>::Node *AVLTree<T>::Node::getParent() {
   return parent;
 }
 
