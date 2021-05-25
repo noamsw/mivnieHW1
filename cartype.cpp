@@ -13,9 +13,9 @@ CarType::CarType(int type, int numOfModels):type(type)
     
     //initializing the models AVLTree
     //AVLTree<Model>* modelstree = new AVLTree<Model>();
-    this->models = new AVLTree<Model>();
+    this->models = new AVLTree<Model>::AVLTree();
     //turning the sorted array into AVLTree
-    // models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
+    models = AVLTree<Model>::arrToAVLTree(modelsarr, 0, numOfModels-1); 
 
     // the model with the highest value at initialization
     // is defined to be the model with the lowest model number

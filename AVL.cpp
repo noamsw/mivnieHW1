@@ -861,17 +861,18 @@ int main() {
   // add to the tree, initialize the random numbers,
   // allocate an empty tree.
   Model modelsarr[10];
-  for(int i=0; i<10; i++)
-  {
-    modelsarr[i].setModel(2, i);
-  }
+  modelsarr[0].setModel(2, 21);
+  modelsarr[1].setModel(2, 34);
+  modelsarr[2].setModel(2, 13);
+  modelsarr[3].setModel(3, 0);
+  modelsarr[4].setModel(2, 3);
+  modelsarr[5].setModel(2, 6);
+  modelsarr[6].setModel(2, 8);
+  modelsarr[7].setModel(2, 17);
+  modelsarr[8].setModel(1, 42);
+  modelsarr[9].setModel(2, 27);
   AVLTree<Model> *tree = new AVLTree<Model>();
 
-  // Insert 10 unique random numbers into the tree.
-  // For each number we are adding, attempt to insert
-  // a random number, until it works because it is
-  // unique. Afterwards, display the new number and
-  // the current state of the tree.
   for (int i = 0; i < 10; i++) 
   { 
     tree->insert(modelsarr[i]);

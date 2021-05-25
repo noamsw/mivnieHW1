@@ -113,7 +113,8 @@ void Model::setModel(int type, int model)
 
 std::ostream& operator<<(std::ostream& os, const Model& car)
 {
-    os << "typeId: " << car.type << " modelId: " << car.model << " grade: " << car.grade;
+    // os << "typeId: " << car.type << " modelId: " << car.model << " grade: " << car.grade;
+    os << car.model ;
     return os;
 }
 
