@@ -1906,27 +1906,10 @@ int main()
   DSW cd;
   cd.addCarType(4,6);
   cd.addCarType(3,4);
-  std::cout << "best sellers"  << std::endl;
-  cd.bestsellers->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "id 4 zeros tree before sale"  << std::endl;
-  cd.zerostree->highest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "id 4 types tree before sale"  << std::endl;
-  cd.typestree->highest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "id 3 types tree before sale"  << std::endl;
-  cd.typestree->lowest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "id 3 zeros tree before sale"  << std::endl;
-  cd.zerostree->lowest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  // cd.bestsellers->print();
-  cd.sellCar(4,3);
-  cd.sellCar(3,2);
-  // if(cd.sellCar(6,1) == FAILURE)
-  //   std::cout << "no such typeId"  << std::endl;
-  std::cout << "id 4 zeros tree after sale, 4,3"  << std::endl;
+  
+  cd.sellCar(4,2);
+  cd.sellCar(3,0);
+  std::cout << "id 4 zeros tree after sale, 4,0"  << std::endl;
   cd.zerostree->highest->data.models->print();
   std::cout <<              "----------------------"  << std::endl;
   // std::cout << "id 3 models tree"  << std::endl;
@@ -1939,6 +1922,7 @@ int main()
   std::cout <<              "----------------------"  << std::endl;
   std::cout << "graded models"  << std::endl;
   cd.gradedmodels->print();
+  std::cout << cd.typestree->lowest->data.best_seller->data << std::endl;
   return 0;
 }
 
