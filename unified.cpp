@@ -621,13 +621,18 @@ bool AVLTree<T>::remove(const T& t) {
 				// parent's height, and rebalance the tree.
 				else {
 					if (side == left)
-						p->setLeftChild(toBeRemoved->getRightChild());
+          {
+            // in this case, the lowest node is now our right son
+            if(lowest == toBeRemoved)
+              lowest = toBeRemoved->getRightChild();
+            p->setLeftChild(toBeRemoved->getRightChild());
+          }
 					else
 						p->setRightChild(toBeRemoved->getRightChild());
 					delete toBeRemoved;
 					p->updateHeight();
 					balanceAtNode(p);
-			} 
+			  } 
 			} 
 		}
   	// Otherwise, we have a left subtree so check the
@@ -648,10 +653,14 @@ bool AVLTree<T>::remove(const T& t) {
 				// parent's height, and rebalance the tree.
 				else {
 					if(side == left)
+          {
+            // in this case our left son is now the highest
+            if(highest == toBeRemoved)
+              highest = toBeRemoved->getLeftChild();
 						p->setLeftChild(toBeRemoved->getLeftChild());
+          }
 					else
 						p->setRightChild(toBeRemoved->getLeftChild());
-					delete toBeRemoved;
 					p->updateHeight();
 					balanceAtNode(p);
 				}
@@ -2179,83 +2188,40 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 }
 
 
-
-// used to debug sellcar
 int main() 
 {
-  // DSW cd;
-  // cd.addCarType(4,6);
-  // cd.addCarType(3,4);
+  DSW cd;
+  cd.addCarType(4,6);
+  cd.addCarType(3,4);
 
-  // cd.sellCar(3,0);
-  // cd.sellCar(3,0);
-  // cd.sellCar(3,0);
-  // cd.sellCar(3,0);
-  // cd.sellCar(3,0);
-  // cd.sellCar(4,0);
-  // cd.sellCar(4,0);
-  // cd.sellCar(3,1);
-  // cd.sellCar(3,2);
-  // cd.sellCar(3,3);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(4,0);
+  std::cout << cd.zerostree->highest->data.models->lowest->data <<std::endl ;
+  cd.sellCar(4,0);
+  cd.sellCar(3,1);
+  cd.sellCar(3,2);
+  cd.sellCar(3,3);
 
-  // std::cout << "id 4 zero tree after sale 3,0"  << std::endl;
-  // cd.zerostree->highest->data.models->print();
-  // std::cout <<              "----------------------"  << std::endl;
-  // std::cout << cd.zerostree->highest->data.models->lowest->data << std::endl;
-  
-  AVLTree<CarType> tree = AVLTree<CarType>();
-  tree.insert(CarType(9,5));
-  tree.insert(CarType(6,5));
-  tree.insert(CarType(3,5));
-  tree.insert(CarType(13,5));
-  tree.insert(CarType(16,5));
-  tree.insert(CarType(32,5));
-  tree.insert(CarType(90,5));
-  tree.insert(CarType(1,3));
-  tree.lowest->data.removeModel(0);
-  tree.lowest->data.removeModel(1);
-  tree.lowest->data.removeModel(2);
-  std::cout << tree.lowest->data << std::endl;
-  tree.lowest->data.models->print();
-  tree.remove(CarType(1,5));
-  std::cout << tree.lowest->data << std::endl;
-  tree.remove(CarType(3,5));
-  std::cout << tree.lowest->data << std::endl;
-  tree.insert(CarType(1,5));
-  std::cout << tree.lowest->data << std::endl;
-  tree.insert(CarType(34,5));
-  std::cout << tree.lowest->data << std::endl;
-  //cd.zerostree->highest->data.models->print();
+  cd.MakeComplaint(3, 1, 1);
+  cd.MakeComplaint(3, 0, 2);
+  cd.MakeComplaint(3, 0, 2);
+
+  //cd.zerostree->print();
   //cd.gradedmodels->print();
-
-  // int t_arr[4]={0, 0, 0, 0};
-  // int m_arr[4]={0, 0, 0, 0};
-
-  // cd.GetWorstModels(4, t_arr, m_arr);
-
-  // for (int i=0; i<4; i++)
-  // {
-  //   std::cout << t_arr[i] << std::endl;
-  //   std::cout << m_arr[i] << std::endl;
-  //   std::cout << std::endl;
-  // }
-
+  std::cout << cd.zerostree->lowest->data.models->lowest->data <<std::endl ;
   /*
-  std::cout << "highest is: " << std::endl ;
-  std::cout << "type: " << cd.gradedmodels->highest->data.type << std::endl ;
-  std::cout << "model: " << cd.gradedmodels->highest->data.model << std::endl ;
-  std::cout << "num sold: " << cd.gradedmodels->highest->data.numsold << std::endl ;
-  std::cout << "grade: " << cd.gradedmodels->highest->data.grade << std::endl;
+  cd.GetWorstModels(4, t_arr, m_arr);
 
-  std::cout << std::endl ;
-
-  std::cout << "lowest is:" << std::endl ;
-  std::cout << "type: " << cd.gradedmodels->lowest->data.type << std::endl ;
-  std::cout << "model: " << cd.gradedmodels->lowest->data.model << std::endl ;
-  std::cout << "num sold: " << cd.gradedmodels->lowest->data.numsold << std::endl ;
-  std::cout << "grade: " << cd.gradedmodels->lowest->data.grade << std::endl;
+  for (int i=0; i<4; i++)
+  {
+    std::cout << t_arr[i] << std::endl;
+    std::cout << m_arr[i] << std::endl;
+    std::cout << std::endl;
+  }
   */
-
   return 0;
 }
-

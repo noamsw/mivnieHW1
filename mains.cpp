@@ -347,3 +347,25 @@
 // //   return 0;
 // // }
 
+// AVLTree<CarType> tree = AVLTree<CarType>();
+//   tree.insert(CarType(9,5));
+//   tree.insert(CarType(6,5));
+//   tree.insert(CarType(3,5));
+//   tree.insert(CarType(13,5));
+//   tree.insert(CarType(16,5));
+//   tree.insert(CarType(32,5));
+//   tree.insert(CarType(90,5));
+//   tree.insert(CarType(1,3));
+//   tree.lowest->data.removeModel(0);
+//   tree.lowest->data.removeModel(1);
+//   tree.lowest->data.removeModel(2);
+//   std::cout << tree.lowest->data << std::endl;
+//   tree.lowest->data.models->print();
+//   tree.remove(CarType(1,5));
+//   std::cout << tree.lowest->data << std::endl;
+//   tree.remove(CarType(3,5));
+//   std::cout << tree.lowest->data << std::endl;
+//   tree.insert(CarType(1,5));
+//   std::cout << tree.lowest->data << std::endl;
+//   tree.insert(CarType(34,5));
+//   std::cout << tree.lowest->data << std::endl;
