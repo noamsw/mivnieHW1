@@ -1775,7 +1775,7 @@ StatusType DSW::sellCar(int typeId, int modelId)
 StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
 {
     // checking input (in wraped fuction, check if DS==NULL)
-    if (typeID < 0 || modelID <= 0)
+    if (typeID <= 0 || modelID < 0 || t==0)
     {
         return INVALID_INPUT;
     }
@@ -1800,7 +1800,7 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
 
     // update model's grade in the typestree
     int original_grade = m_to_complaint->data.grade;
-    int complaint_grade = t / 100;
+    int complaint_grade = 100 / t;
     int new_grade = original_grade - complaint_grade;
     int numsold = m_to_complaint->data.numSold;
     m_to_complaint->data.grade = m_to_complaint->data.grade - complaint_grade;
@@ -1826,7 +1826,7 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     }
 
     // if the model isnt in the zeros, it must be in the grademodels
-    // check if the grade how now returned to zero
+    // check if the grade has now returned to zero
     // if so we must remove it from the gradedmodels
     // and insert into the zerostree
     if(new_grade == 0)
@@ -1898,9 +1898,16 @@ void insertModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* 
 	(*index)+=1;
 }
 
+void insertGradedModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node)
+{
+	t_arr[*index]=model_node->data.type;
+	m_arr[*index]=model_node->data.model;
+	(*index)+=1;
+}
 
-void inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node,
-											 int numOfModels, AVLTree<Model>::Node* first_positive_node)
+
+void inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
+											 int numOfModels, AVLTree<GradedModel>::Node* first_positive_node)
 {
 	// stop-conditions 
 	if(model_node == nullptr || (*index == numOfModels))
@@ -1914,7 +1921,7 @@ void inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::No
 	// push only the negative graded models to the arrays
 	if (model_node->data.grade < 0)
 	{
-		insertModelToArr(t_arr, m_arr, index, model_node);	
+		insertGradedModelToArr(t_arr, m_arr, index, model_node);	
 	}
 
 	// if the grade is not negative, we want to exit the recurrsion and keep the first positive node
@@ -1928,8 +1935,8 @@ void inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::No
 	inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
 }
 
-void inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node,
-													 int numOfModels, AVLTree<Model>::Node* first_positive_node)
+void inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
+													 int numOfModels, AVLTree<GradedModel>::Node* first_positive_node)
 {
 	// stop-conditions
 	if (model_node == nullptr || (*index == numOfModels))
@@ -1946,7 +1953,7 @@ void inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<Mode
 	}	
 
 	// the node exist and its negative, add it to the arr 
-	insertModelToArr(t_arr, m_arr, index, model_node);
+	insertGradedModelToArr(t_arr, m_arr, index, model_node);
 
 	// use inorder algorithm to check&insert the node's right sub-tree
 	inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
@@ -1956,7 +1963,7 @@ void inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<Mode
 }
 
 
-void inorderZPModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node, int numOfModels)
+void inorderZeroModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node, int numOfModels)
 {
 	// stop-conditions 
 	if(model_node == nullptr || (*index == numOfModels))
@@ -1965,16 +1972,16 @@ void inorderZPModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* mo
 	}
 
 	// recursive call to the left childs
-	inorderZPModel(t_arr, m_arr, index , model_node->getLeftChild(), numOfModels);
+	inorderZeroModel(t_arr, m_arr, index , model_node->getLeftChild(), numOfModels);
 
 	// insert node to the arrays
 	insertModelToArr(t_arr, m_arr, index, model_node);	
 
 	// recursive call to the right childs
-	inorderZPModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
+	inorderZeroModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
 }
 
-void inorderZPLowesModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node, int numOfModels)
+void inorderZeroLowestModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node, int numOfModels)
 {
 	// stop-conditions
 	if (model_node == nullptr || (*index == numOfModels))
@@ -1986,12 +1993,11 @@ void inorderZPLowesModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Nod
 	insertModelToArr(t_arr, m_arr, index, model_node);
 
 	// use inorder algorithm to check&insert the node's right sub-tree
-	inorderZPModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
+	inorderZeroModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
 
-	// reccursive call to inorderZeroLowesModel
-	inorderZPLowesModel(t_arr, m_arr, index, model_node->getParent(), numOfModels);	
+	// reccursive call to inorderZeroLowestModel
+	inorderZeroLowestModel(t_arr, m_arr, index, model_node->getParent(), numOfModels);	
 }
-
 
 void inorderZerosCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::Node* node, int numOfModels)
 {
@@ -2005,7 +2011,7 @@ void inorderZerosCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::Node* 
   inorderZerosCT(t_arr, m_arr, index, node->getLeftChild(), numOfModels);
 
   // getting in to CarType's models
-  inorderZPModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
+  inorderZeroModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
 
   //recursive call to the right child
   inorderZerosCT(t_arr, m_arr, index, node->getRightChild(), numOfModels);
@@ -2019,9 +2025,46 @@ void inorderZerosLowestCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::
 		return;
 	}	
 
-  inorderZPModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
+  inorderZeroModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
   inorderZerosCT(t_arr, m_arr, index, node->getRightChild(), numOfModels);
   inorderZerosLowestCT(t_arr, m_arr, index, node->getParent(), numOfModels);
+}
+
+
+void inorderPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node, int numOfModels)
+{
+	// stop-conditions 
+	if(model_node == nullptr || (*index == numOfModels))
+	{
+		return;
+	}
+
+	// recursive call, first start with the left childs (lower values)
+	inorderPositiveModel(t_arr, m_arr, index , model_node->getLeftChild(), numOfModels);
+
+	// insert graded model to the arrays
+	insertGradedModelToArr(t_arr, m_arr, index, model_node);	
+
+	// recursive call for the right childs
+	inorderPositiveModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
+}
+
+void inorderLowestPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node, int numOfModels)
+{
+	// stop-conditions
+	if (model_node == nullptr || (*index == numOfModels))
+	{
+		return;
+	}
+
+	// the node exist, and we havent filled the arrays, insert it 
+	insertGradedModelToArr(t_arr, m_arr, index, model_node);
+
+	// use inorder algorithm to check&insert the node's right sub-tree
+	inorderPositiveModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
+
+	// reccursive call to inorderLowestNegativeModel
+	inorderLowestPositiveModel(t_arr, m_arr, index, model_node->getParent(), numOfModels);
 }
 
 
@@ -2044,7 +2087,7 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 	// first we insert the negative graded models
 	// then we insert the zero graded models
 	// and then we insert the positive graded models
-	AVLTree<Model>::Node* first_positive_node = nullptr; //should i use new?
+	AVLTree<GradedModel>::Node* first_positive_node = nullptr; //should i use new?
 
 	// inserting the negative graded models
   inorderLowestNegativeModel(types, models , index, this->gradedmodels->lowest , numOfModels, first_positive_node);
@@ -2070,7 +2113,7 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 
 
   //if we didnt fill the array, go to models positive grades
-  inorderZPLowesModel(types, models, index, first_positive_node, numOfModels);
+  inorderLowestPositiveModel(types, models, index, first_positive_node, numOfModels);
 
   // if we didnt fill the array, there arnt enough nodes in the system. 
 	if (*index < numOfModels)
@@ -2090,38 +2133,56 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 int main() 
 {
   DSW cd;
-  
   cd.addCarType(4,6);
   cd.addCarType(3,4);
-  std::cout << "id 3 types tree before sale, 3,0"  << std::endl;
-  cd.typestree->lowest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  
+
   cd.sellCar(3,0);
-  cd.gradedmodels->print();
-  std::cout << "^^graded model above^^"  << std::endl;
-  std::cout << "id 3 types tree after sale, 3,0"  << std::endl;
-  cd.typestree->lowest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "id 3 zero tree after sale 3,0"  << std::endl;
-  cd.zerostree->lowest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
   cd.sellCar(3,0);
   cd.sellCar(3,0);
   cd.sellCar(3,0);
   cd.sellCar(3,0);
   cd.sellCar(4,0);
-  std::cout << "id 3 types tree after  sale, 3,0"  << std::endl;
-  cd.typestree->lowest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "id 3 zero tree after  sale 3,0"  << std::endl;
-  cd.zerostree->lowest->data.models->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "best sellers"  << std::endl;
-  cd.bestsellers->print();
-  std::cout <<              "----------------------"  << std::endl;
-  std::cout << "graded models"  << std::endl;
-  cd.gradedmodels->print();
+  cd.sellCar(4,0);
+  cd.sellCar(3,1);
+  cd.sellCar(3,2);
+  cd.sellCar(3,3);
+
+  cd.MakeComplaint(3, 0, 2);
+  cd.MakeComplaint(3, 1, 1);
+  cd.MakeComplaint(3, 0, 2);
+  
+
+  //cd.zerostree->highest->data.models->print();
+  //cd.gradedmodels->print();
+
+  int t_arr[4]={0, 0, 0, 0};
+  int m_arr[4]={0, 0, 0, 0};
+
+  cd.GetWorstModels(4, t_arr, m_arr);
+
+  for (int i=0; i<4; i++)
+  {
+    std::cout << t_arr[i] << std::endl;
+    std::cout << m_arr[i] << std::endl;
+    std::cout << std::endl;
+  }
+
+  /*
+  std::cout << "highest is: " << std::endl ;
+  std::cout << "type: " << cd.gradedmodels->highest->data.type << std::endl ;
+  std::cout << "model: " << cd.gradedmodels->highest->data.model << std::endl ;
+  std::cout << "num sold: " << cd.gradedmodels->highest->data.numsold << std::endl ;
+  std::cout << "grade: " << cd.gradedmodels->highest->data.grade << std::endl;
+
+  std::cout << std::endl ;
+
+  std::cout << "lowest is:" << std::endl ;
+  std::cout << "type: " << cd.gradedmodels->lowest->data.type << std::endl ;
+  std::cout << "model: " << cd.gradedmodels->lowest->data.model << std::endl ;
+  std::cout << "num sold: " << cd.gradedmodels->lowest->data.numsold << std::endl ;
+  std::cout << "grade: " << cd.gradedmodels->lowest->data.grade << std::endl;
+  */
+
   return 0;
 }
 
