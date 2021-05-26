@@ -211,7 +211,7 @@ class DSW
     StatusType removeCarType(int typeId);
     // Sell a car of typeid, model id and updates system
     // throws relevent exceptions
-    StatusType sellCarr(int typeId, int modelId);
+    StatusType sellCar(int typeId, int modelId);
     // files a complaint against a model
     // throws relevent exceptions
     StatusType MakeComplaint(int typeID, int modelID, int t);
@@ -1066,6 +1066,10 @@ bool Model::operator==(const Model& other)
 // comparing operator, compares grades of cars
 bool Model::operator<(const Model& other)
 {
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
     // if the grade is smaller, return true
     if(grade < other.grade){
         return true;
@@ -1073,13 +1077,13 @@ bool Model::operator<(const Model& other)
     // otherwise check if the grade is equal
     if(grade == other.grade)
     {
-        // now, if the grade is equal, but the type is bigger
+        // now, if the grade is equal, but the type is smaller
         // than it is still smaller, return true
-        if(type > other.type)
+        if(type < other.type)
             return true;
-        // if the type is equal, check that the model is larger
+        // if the type is equal, check that the model is smaller
         if(type == other.type)
-            if(model > other.model)
+            if(model < other.model)
                 return true;
     }
     // the grade is either smaller
@@ -1092,6 +1096,10 @@ bool Model::operator<(const Model& other)
 // comparing operator, compares grades of cars const
 bool Model::operator<(const Model& other) const
 {
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
     // if the grade is smaller, return true
     if(grade < other.grade){
         return true;
@@ -1099,11 +1107,11 @@ bool Model::operator<(const Model& other) const
     // otherwise check if the grade is equal
     if(grade == other.grade)
     {
-        // now, if the grade is equal, but the type is bigger
+        // now, if the grade is equal, but the type is smaller
         // than it is still smaller, return true
         if(type < other.type)
             return true;
-        // if the type is equal, check that the model is larger
+        // if the type is equal, check that the model is smaller
         if(type == other.type)
             if(model < other.model)
                 return true;
@@ -1119,6 +1127,10 @@ bool Model::operator<(const Model& other) const
 // comparing operator, compares grades of cars
 bool Model::operator>(const Model& other)
 {
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
     // check if the model is smaller
     // if not, it is larger as there are no two different models that are equal
     return !(*this < other);
@@ -1127,6 +1139,10 @@ bool Model::operator>(const Model& other)
 // comparing operator, compares grades of cars const
 bool Model::operator>(const Model& other) const
 {
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
     // check if the model is smaller
     // if not, it is larger as there are no two different models that are equal
     return !(*this < other);
@@ -1182,6 +1198,7 @@ CarType::CarType(int type, int numOfModels):type(type)
 CarType::CarType(const CarType& cartype):type(cartype.type)
 {
     models = cartype.models;
+    best_seller = cartype.best_seller;
 }
 
 //destructor for CarType, must delete models
@@ -1206,6 +1223,7 @@ CarType& CarType::operator=(CarType& cartype)
 {
     models = cartype.models;
     type = cartype.type;
+    best_seller = cartype.best_seller;
     return *this;
 }
 
@@ -1442,24 +1460,24 @@ StatusType DSW::removeCarType(int typeId)
         return FAILURE;
     }
     // if we are here then the car was in the tree
-    AVLTree<CarType>::Node* node_to_remove = typestree->findNode(to_remove);
-    assert(node_to_remove != nullptr);
+    AVLTree<CarType>::Node* type_to_remove = typestree->findNode(to_remove);
+    assert(type_to_remove != nullptr);
     // remove from the bestsellers tree
     // in order to do so we will find the relevent information
     // from the typestree node
-    int grade = node_to_remove->data.best_seller->data.numSold*10;
-    int model = node_to_remove->data.best_seller->data.model;
+    int grade = type_to_remove->data.best_seller->data.numSold;
+    int model = type_to_remove->data.best_seller->data.model;
     // remove from the bestsellers tree
-    bestsellers->remove(MostSold(typeId, model, grade/10));
+    bestsellers->remove(MostSold(typeId, model, grade));
     // best seller will be updated automatically as highest node 
     // of the tree
-    while(node_to_remove->data.models->root != nullptr)
+    while(type_to_remove->data.models->root != nullptr)
     {
         // remove the model from gradedmodels
         // no need to check whats actually there
-        gradedmodels->remove(node_to_remove->data.models->root->data);
+        gradedmodels->remove(type_to_remove->data.models->root->data);
         // remove the model from the typestree tree node
-        node_to_remove->data.models->remove(node_to_remove->data.models->root->data);
+        type_to_remove->data.models->remove(type_to_remove->data.models->root->data);
     }
     typestree->remove(to_remove);
     return SUCCESS;
@@ -1467,10 +1485,10 @@ StatusType DSW::removeCarType(int typeId)
 
 // Sell a car of typeid, model id and updates system
 // throws relevent exceptions
-StatusType DSW::sellCarr(int typeId, int modelId)
+StatusType DSW::sellCar(int typeId, int modelId)
 {
     // check arguments
-    if(typeId <= 0 || modelId <=0)
+    if(typeId <= 0 || modelId <0)
         return INVALID_INPUT;
     CarType finder(typeId , 1);
     // check that the type was in the tree
@@ -1523,7 +1541,7 @@ StatusType DSW::sellCarr(int typeId, int modelId)
             tree_of_models_to_update->data.best_seller 
             = tree_of_models_to_update->data.models->findNode(model_to_insert);
 
-        }
+        } 
         // final case - equal
         else if(tree_of_models_to_update->data.best_seller->data.numSold == sold)
         {
@@ -1542,20 +1560,54 @@ StatusType DSW::sellCarr(int typeId, int modelId)
         }
            
     } 
-    // find and remove from zerostree, checking that its there
-    assert(zerostree->findNode(finder));
-    zerostree->findNode(finder)->data.models->remove(model_to_insert);
-    // remove and reinsert in gradedmodels
-    gradedmodels->remove(model_to_insert);
-    try
+
+    // check if the grade is now 0
+    // if it was it was in the graded tree and not in zeros tree
+    // remove from the graded models tree
+    // enter into zeroes tree
+    if(grade == 0)
     {
-        gradedmodels->insert(model_to_insert);
+        // insert into zerostree
+        assert(zerostree->findNode(finder));
+        zerostree->findNode(finder)->data.models->insert(model_to_insert);
+        // remove from gradedmodels
+        gradedmodels->remove(model_to_insert);
     }
-    catch (std::exception& e)
+    else
     {
-        throw ALLOCATION_ERROR;
-    }
-    return SUCCESS;  
+        // if the grade was 0
+        // remove from zeros tree
+        // insert into graded models
+        if(grade == 10)
+        {
+            // remove from zerostree
+            assert(zerostree->findNode(finder));
+            zerostree->findNode(finder)->data.models->remove(Model(typeId,modelId));
+            // insert into graded models
+            try
+            {
+                gradedmodels->insert(model_to_insert);
+            }
+            catch (std::exception& e)
+            {
+                throw ALLOCATION_ERROR;
+            }            
+        }
+        // else simply update graded models
+        else
+        {
+            try
+            {
+                gradedmodels->remove(model_to_insert);
+                gradedmodels->insert(model_to_insert);
+            }
+            catch (std::exception& e)
+            {
+                throw ALLOCATION_ERROR;
+            }
+        }      
+    } 
+    return SUCCESS;   
 }
 
 StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
@@ -1848,25 +1900,45 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 	return SUCCESS;
 }
 
-
+// used to debug sellcar
 int main() 
 {
   DSW cd;
   cd.addCarType(4,6);
-  cd.sellCarr(4, 4);
-  cd.MakeComplaint(4, 4, 2);
-
-  //cd.addCarType(3,4);
-  //cd.addCarType(6,3);
-  //cd.sellCarr(6, 1);
-  //int types[3]= {0, 0, 0};
-  //int models[3]= {0, 0, 0};
-  //cd.GetWorstModels(3, types , models);
-  //std::cout << types[0] <<" , "<< types[1] <<" , "<< types[4] <<" , ";
-  //std::cout << models[0] <<" , "<< models[1] <<" , "<< models[4] <<" , ";
-  //cd.bestsellers->print();
-  //cd.typestree->highest->data.models->print();
-  //cd.typestree->lowest->data.models->print();
+  cd.addCarType(3,4);
+  std::cout << "best sellers"  << std::endl;
+  cd.bestsellers->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 4 zeros tree before sale"  << std::endl;
+  cd.zerostree->highest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 4 types tree before sale"  << std::endl;
+  cd.typestree->highest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 types tree before sale"  << std::endl;
+  cd.typestree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 zeros tree before sale"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  // cd.bestsellers->print();
+  cd.sellCar(4,3);
+  cd.sellCar(3,2);
+  // if(cd.sellCar(6,1) == FAILURE)
+  //   std::cout << "no such typeId"  << std::endl;
+  std::cout << "id 4 zeros tree after sale, 4,3"  << std::endl;
+  cd.zerostree->highest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  // std::cout << "id 3 models tree"  << std::endl;
+  // cd.typestree->lowest->data.models->print();
+  std::cout << "id 3 zero tree after sale 3,2"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "best sellers"  << std::endl;
+  cd.bestsellers->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "graded models"  << std::endl;
+  cd.gradedmodels->print();
   return 0;
 }
 
