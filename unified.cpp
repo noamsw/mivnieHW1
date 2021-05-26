@@ -192,6 +192,7 @@ public:
     bool operator==(const CarType& cartype) const;
     bool addModel(int model_num, int grade, int numSold);
     bool removeModel(int model_num);
+    friend std::ostream& operator<<(std::ostream& os, const Model& car);
 };
 
 
@@ -1405,6 +1406,12 @@ bool CarType::removeModel(int model_num)
     return(this->models->remove(model_to_delete));
 }
 
+std::ostream& operator<<(std::ostream& os, const CarType& car)
+{
+    os <<  "t:" << car.type ;
+    return os;
+}
+
 
 //default constructor for model. all fields initialized to 0
 MostSold::MostSold():type(0), model(0), numsold(0){};
@@ -1719,7 +1726,18 @@ StatusType DSW::sellCar(int typeId, int modelId)
     if(grade == 0)
     {
         // insert into zerostree
-        assert(zerostree->findNode(finder));
+        // first check if the zeros tree contains our type
+        // if not we must reinsert it
+        if(!zerostree->findNode(finder))
+        {
+          // create a cartype
+          // remove the default model inside
+          // insert the wanted model
+          CarType* to_insert = new CarType(typeId,1);
+          to_insert->models->remove(Model(typeId,0));
+          to_insert->models->insert(Model(typeId,modelId,0,sold));
+          zerostree->insert(*to_insert);
+        }
         zerostree->findNode(finder)->data.models->insert(model_to_insert);
         // remove from gradedmodels
         // using the old grade
@@ -1737,7 +1755,14 @@ StatusType DSW::sellCar(int typeId, int modelId)
         {
             // remove from zerostree
             assert(zerostree->findNode(finder));
-            zerostree->findNode(finder)->data.models->remove(Model(typeId,modelId));
+            AVLTree<CarType>::Node* zeros_tree_of_type = zerostree->findNode(finder);
+            zeros_tree_of_type->data.models->remove(Model(typeId,modelId));
+            // check if this zeros tree of type typeid is empty
+            // if so remove from zeros tree
+            if(zeros_tree_of_type->data.models->root == nullptr)
+            { 
+              zerostree->remove(zeros_tree_of_type->data);
+            }
             // insert into graded models
             // using the current grade
             // and current numsold
@@ -1809,22 +1834,34 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     Model model_to_add= Model(typeID, modelID, m_to_complaint->data.grade, m_to_complaint->data.numSold);
 
     // check if the type is in the zerostree
-    AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
-    if (ct_node_zeros != nullptr)
+    // if the origanl grade was 0
+    // then the model was in the zeros tree
+    // find in the zeros tree and remove.
+    // insert into gradedmodels tree
+    if(original_grade == 0)
     {
-        // check if the model is in the ct_node_zeros
-        AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
-        if (m_node_zeros != nullptr)
-        {
-            // remove the model from the zeros tree
-            ct_node_zeros->data.removeModel(modelID);
-            // insert te model to the grade tree
-            // using the current grade and numsold
-            gradedmodels->insert(GradedModel(typeID, modelID, new_grade, numsold));
-            return SUCCESS;
-        }
+      AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+      if (ct_node_zeros != nullptr)
+      {
+          // check if the model is in the ct_node_zeros
+          AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
+          if (m_node_zeros != nullptr)
+          {
+              // remove the model from the zeros tree
+              ct_node_zeros->data.removeModel(modelID);
+              // check if this zeros tree of type typeid is empty
+              // if so remove from zeros tree
+              if(ct_node_zeros->data.models->root == nullptr)
+              { 
+                zerostree->remove(ct_node_zeros->data);
+              }
+              // insert te model to the grade tree
+              // using the current grade and numsold
+              gradedmodels->insert(GradedModel(typeID, modelID, new_grade, numsold));
+              return SUCCESS;
+          }
+      }
     }
-
     // if the model isnt in the zeros, it must be in the grademodels
     // check if the grade has now returned to zero
     // if so we must remove it from the gradedmodels
@@ -1833,10 +1870,24 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     {
         // find the type in the zerostree 
         AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+        if(!ct_node_zeros)
+        {
+          // create a cartype
+          // remove the default model inside
+          // insert the wanted model
+          CarType* to_insert = new CarType(typeID,1);
+          to_insert->models->remove(Model(typeID,0));
+          to_insert->models->insert(Model(typeID,modelID,0,numsold));
+          zerostree->insert(*to_insert);
+          // remove from the gradedmodels tree
+          // using the old grade
+          gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
+          return SUCCESS;
+        }
         if (ct_node_zeros != nullptr)
         {
             // insert the model into the zeros tree
-            ct_node_zeros->data.addModel(modelID, 0, numsold);
+            ct_node_zeros->data.models->insert(Model(typeID,modelID, 0, numsold));
             // remove from the gradedmodels tree
             // using the old grade
             gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
@@ -2132,40 +2183,62 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 // used to debug sellcar
 int main() 
 {
-  DSW cd;
-  cd.addCarType(4,6);
-  cd.addCarType(3,4);
+  // DSW cd;
+  // cd.addCarType(4,6);
+  // cd.addCarType(3,4);
 
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(4,0);
-  cd.sellCar(4,0);
-  cd.sellCar(3,1);
-  cd.sellCar(3,2);
-  cd.sellCar(3,3);
+  // cd.sellCar(3,0);
+  // cd.sellCar(3,0);
+  // cd.sellCar(3,0);
+  // cd.sellCar(3,0);
+  // cd.sellCar(3,0);
+  // cd.sellCar(4,0);
+  // cd.sellCar(4,0);
+  // cd.sellCar(3,1);
+  // cd.sellCar(3,2);
+  // cd.sellCar(3,3);
 
-  cd.MakeComplaint(3, 0, 2);
-  cd.MakeComplaint(3, 1, 1);
-  cd.MakeComplaint(3, 0, 2);
+  // std::cout << "id 4 zero tree after sale 3,0"  << std::endl;
+  // cd.zerostree->highest->data.models->print();
+  // std::cout <<              "----------------------"  << std::endl;
+  // std::cout << cd.zerostree->highest->data.models->lowest->data << std::endl;
   
-
+  AVLTree<CarType> tree = AVLTree<CarType>();
+  tree.insert(CarType(9,5));
+  tree.insert(CarType(6,5));
+  tree.insert(CarType(3,5));
+  tree.insert(CarType(13,5));
+  tree.insert(CarType(16,5));
+  tree.insert(CarType(32,5));
+  tree.insert(CarType(90,5));
+  tree.insert(CarType(1,3));
+  tree.lowest->data.removeModel(0);
+  tree.lowest->data.removeModel(1);
+  tree.lowest->data.removeModel(2);
+  std::cout << tree.lowest->data << std::endl;
+  tree.lowest->data.models->print();
+  tree.remove(CarType(1,5));
+  std::cout << tree.lowest->data << std::endl;
+  tree.remove(CarType(3,5));
+  std::cout << tree.lowest->data << std::endl;
+  tree.insert(CarType(1,5));
+  std::cout << tree.lowest->data << std::endl;
+  tree.insert(CarType(34,5));
+  std::cout << tree.lowest->data << std::endl;
   //cd.zerostree->highest->data.models->print();
   //cd.gradedmodels->print();
 
-  int t_arr[4]={0, 0, 0, 0};
-  int m_arr[4]={0, 0, 0, 0};
+  // int t_arr[4]={0, 0, 0, 0};
+  // int m_arr[4]={0, 0, 0, 0};
 
-  cd.GetWorstModels(4, t_arr, m_arr);
+  // cd.GetWorstModels(4, t_arr, m_arr);
 
-  for (int i=0; i<4; i++)
-  {
-    std::cout << t_arr[i] << std::endl;
-    std::cout << m_arr[i] << std::endl;
-    std::cout << std::endl;
-  }
+  // for (int i=0; i<4; i++)
+  // {
+  //   std::cout << t_arr[i] << std::endl;
+  //   std::cout << m_arr[i] << std::endl;
+  //   std::cout << std::endl;
+  // }
 
   /*
   std::cout << "highest is: " << std::endl ;
