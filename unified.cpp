@@ -654,13 +654,15 @@ bool AVLTree<T>::remove(const T& t) {
 				else {
 					if(side == left)
           {
-            // in this case our left son is now the highest
-            if(highest == toBeRemoved)
-              highest = toBeRemoved->getLeftChild();
 						p->setLeftChild(toBeRemoved->getLeftChild());
           }
 					else
+          {
+            // in this case our left son is now the highest
+            if(highest == toBeRemoved)
+              highest = toBeRemoved->getLeftChild();
 						p->setRightChild(toBeRemoved->getLeftChild());
+          }
 					p->updateHeight();
 					balanceAtNode(p);
 				}
@@ -2190,38 +2192,29 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 
 int main() 
 {
-  DSW cd;
-  cd.addCarType(4,6);
-  cd.addCarType(3,4);
+  AVLTree<int> tree = AVLTree<int>();
+  tree.insert(2);
+  tree.insert(0);
+  tree.insert(3);
+  tree.insert(1);
+  tree.print();
+  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
+  tree.remove(0);
+  tree.print();
+  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
+  std::cout << "lowest data: " <<tree.lowest->data << " highest data: " << tree.highest->data << std::endl;
+  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
 
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(4,0);
-  std::cout << cd.zerostree->highest->data.models->lowest->data <<std::endl ;
-  cd.sellCar(4,0);
-  cd.sellCar(3,1);
-  cd.sellCar(3,2);
-  cd.sellCar(3,3);
-
-  cd.MakeComplaint(3, 1, 1);
-  cd.MakeComplaint(3, 0, 2);
-  cd.MakeComplaint(3, 0, 2);
-
-  //cd.zerostree->print();
-  //cd.gradedmodels->print();
-  std::cout << cd.zerostree->lowest->data.models->lowest->data <<std::endl ;
-  /*
-  cd.GetWorstModels(4, t_arr, m_arr);
-
-  for (int i=0; i<4; i++)
-  {
-    std::cout << t_arr[i] << std::endl;
-    std::cout << m_arr[i] << std::endl;
-    std::cout << std::endl;
-  }
-  */
-  return 0;
+  AVLTree<int> tree2 = AVLTree<int>();
+  tree2.insert(1);
+  tree2.insert(0);
+  tree2.insert(3);
+  tree2.insert(2);
+  tree2.print();
+  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
+  tree2.remove(3);
+  tree2.print();
+  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
+  std::cout << "lowest data: " <<tree2.lowest->data << " highest data: " << tree2.highest->data << std::endl;
+  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
 }
