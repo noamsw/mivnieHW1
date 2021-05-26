@@ -373,6 +373,8 @@ int AVLTree<T>::Node::updateHeight() {
 template<typename T>
 AVLTree<T>::AVLTree() {
   root = nullptr;
+  lowest = nullptr;
+  highest = nullptr;
 }
 
 // Constructor to populate the tree with one node, not used in HW
@@ -483,6 +485,8 @@ bool AVLTree<T>::insert(const T& t) {
 	  else if (t > temp->getData()) {
 		if (temp->getRightChild() == nullptr) {
 		  added_node = temp->setRightChild(new Node(t));
+      // if we are the furthest right node
+      // we are the largest valued node
 		  if(highest != nullptr){
 			  if(t > highest->getData())
 			  	highest = added_node;
@@ -1375,7 +1379,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     // check that the input is correct
     if( typeId<=0 || numOfModels<=0 )
         return INVALID_INPUT;
-    CarType* to_insert;
+    CarType* to_insert = nullptr;
     try
     {
         to_insert = new CarType(typeId, numOfModels);
@@ -1399,7 +1403,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
         return ALLOCATION_ERROR;
     }
     bestsellers->insert(MostSold(typeId,0,0));
-    CarType* zeroes_insert;
+    CarType* zeroes_insert = nullptr;
     try
     {
         zeroes_insert = new CarType(typeId, numOfModels);
@@ -1428,6 +1432,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
 // removes a car type from the system
 StatusType DSW::removeCarType(int typeId)
 {
+    // check validity of input
     if(typeId <= 0)
         return INVALID_INPUT;
     CarType to_remove(typeId , 1);
@@ -1624,8 +1629,14 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
     //if typeID=0, we should return system's best seller
     if (typeID==0)
     {
-        *modelID = bestsellers->getHighest()->data.model;
-        return SUCCESS;
+        // we must check if highest is a null pointer
+        if(bestsellers->getHighest() != nullptr)
+        {
+          *modelID = bestsellers->getHighest()->data.model;
+          return SUCCESS;
+        }
+        else
+          return FAILURE;
     }
 
     //check if typeID is in the system
