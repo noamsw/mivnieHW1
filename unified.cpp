@@ -621,13 +621,18 @@ bool AVLTree<T>::remove(const T& t) {
 				// parent's height, and rebalance the tree.
 				else {
 					if (side == left)
-						p->setLeftChild(toBeRemoved->getRightChild());
+          {
+            // in this case, the lowest node is now our right son
+            if(lowest == toBeRemoved)
+              lowest = toBeRemoved->getRightChild();
+            p->setLeftChild(toBeRemoved->getRightChild());
+          }
 					else
 						p->setRightChild(toBeRemoved->getRightChild());
 					delete toBeRemoved;
 					p->updateHeight();
 					balanceAtNode(p);
-			} 
+			  } 
 			} 
 		}
   	// Otherwise, we have a left subtree so check the
@@ -648,10 +653,14 @@ bool AVLTree<T>::remove(const T& t) {
 				// parent's height, and rebalance the tree.
 				else {
 					if(side == left)
+          {
+            // in this case our left son is now the highest
+            if(highest == toBeRemoved)
+              highest = toBeRemoved->getLeftChild();
 						p->setLeftChild(toBeRemoved->getLeftChild());
+          }
 					else
 						p->setRightChild(toBeRemoved->getLeftChild());
-					delete toBeRemoved;
 					p->updateHeight();
 					balanceAtNode(p);
 				}
@@ -2188,6 +2197,7 @@ int main()
   cd.sellCar(3,0);
   cd.sellCar(3,0);
   cd.sellCar(4,0);
+
   cd.sellCar(4,0);
   cd.sellCar(3,1);
   cd.sellCar(3,2);
@@ -2197,22 +2207,4 @@ int main()
   cd.MakeComplaint(3, 0, 2);
   cd.MakeComplaint(3, 0, 2);
 
-  int t_arr[4]={0, 0, 0, 0};
-  int m_arr[4]={0, 0, 0, 0};
-
-  //cd.zerostree->print();
-  //cd.gradedmodels->print();
-  cd.zerostree->lowest->data.models->print();
-
-  /*
-  cd.GetWorstModels(4, t_arr, m_arr);
-
-  for (int i=0; i<4; i++)
-  {
-    std::cout << t_arr[i] << std::endl;
-    std::cout << m_arr[i] << std::endl;
-    std::cout << std::endl;
-  }
-  */
-  return 0;
-}
+ 
