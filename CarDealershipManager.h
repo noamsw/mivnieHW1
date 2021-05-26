@@ -33,7 +33,7 @@ class DSW
     StatusType removeCarType(int typeId);
     // Sell a car of typeid, model id and updates system
     // throws relevent exceptions
-    StatusType sellCarr(int typeId, int modelId);
+    StatusType sellCar(int typeId, int modelId);
     // files a complaint against a model
     // throws relevent exceptions
     StatusType MakeComplaint(int typeID, int modelID, int t);

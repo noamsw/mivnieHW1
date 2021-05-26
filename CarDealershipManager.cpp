@@ -119,7 +119,7 @@ StatusType DSW::removeCarType(int typeId)
 
 // Sell a car of typeid, model id and updates system
 // throws relevent exceptions
-StatusType DSW::sellCarr(int typeId, int modelId)
+StatusType DSW::sellCar(int typeId, int modelId)
 {
     // check arguments
     if(typeId <= 0 || modelId <=0)
