@@ -4,6 +4,9 @@
 #include "iostream"
 #include "avl.h"
 
+// class used by the main types tree
+// value of each model is determined
+// by modelId only
 class Model{
 public:
     int type;
@@ -26,6 +29,7 @@ public:
     bool operator<(const Model& other);
     friend std::ostream& operator<<(std::ostream& os, const Model& car);
 };
+
 
 
 #endif

@@ -17,7 +17,7 @@ class DSW
     // contanins only models with a grade of zero
     AVLTree<CarType>* zerostree;
     // tree of models by grade
-    AVLTree<Model>* gradedmodels;
+    AVLTree<GradedModel>* gradedmodels;
     // a tree with the systems best sellers
     // it is of type mostsold class
     // this contains type, model, numsold

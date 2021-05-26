@@ -110,6 +110,9 @@ public:
 };
 
 
+// class used by the main types tree
+// value of each model is determined
+// by modelId only
 class Model{
 public:
     int type;
@@ -131,6 +134,32 @@ public:
     bool operator>(const Model& other);
     bool operator<(const Model& other);
     friend std::ostream& operator<<(std::ostream& os, const Model& car);
+};
+
+// type used to in graded models tree
+// value is determined by grades as well 
+// as type and model
+class GradedModel{
+public:
+    int type;
+    int model;
+    int grade=0;
+    int numsold=0;
+
+    GradedModel();
+    GradedModel(int type, int model);
+    GradedModel(int type, int model, int grade, int numSold);
+    GradedModel(const GradedModel& other) = default;
+    void setGradedModel(int type, int model,int grade, int numsold);
+    void complaint(int numMonths);
+    GradedModel& operator=(const GradedModel& other) = default;
+    bool operator==(const GradedModel& other) const;
+    bool operator>(const GradedModel& other) const;
+    bool operator<(const GradedModel& other) const;
+    bool operator==(const GradedModel& other);
+    bool operator>(const GradedModel& other);
+    bool operator<(const GradedModel& other);
+    friend std::ostream& operator<<(std::ostream& os, const GradedModel& car);
 };
 
 
@@ -195,7 +224,7 @@ class DSW
     // contanins only models with a grade of zero
     AVLTree<CarType>* zerostree;
     // tree of models by grade
-    AVLTree<Model>* gradedmodels;
+    AVLTree<GradedModel>* gradedmodels;
     // a tree with the systems best sellers
     // it is of type mostsold class
     // this contains type, model, numsold
@@ -1071,25 +1100,15 @@ bool Model::operator<(const Model& other)
     // we should consider them equal
     if((*this) == other)
       return false;
-    // if the grade is smaller, return true
-    if(grade < other.grade){
+    // if type is smaller than it is considered smaller
+    if(type < other.type)
         return true;
-    }
-    // otherwise check if the grade is equal
-    if(grade == other.grade)
-    {
-        // now, if the grade is equal, but the type is smaller
-        // than it is still smaller, return true
-        if(type < other.type)
+    // if the type is equal, check that the model is smaller
+    if(type == other.type)
+        if(model < other.model)
             return true;
-        // if the type is equal, check that the model is smaller
-        if(type == other.type)
-            if(model < other.model)
-                return true;
-    }
-    // the grade is either smaller
-    // or the grade is equal but the type is smaller
-    // or the grade and type are equal but the model is smaller
+    // the type is either larger
+    // or the types are equal but the model is larger
     // in all of these cases the car is a better model
     // return false
     return false; 
@@ -1101,25 +1120,15 @@ bool Model::operator<(const Model& other) const
     // we should consider them equal
     if((*this) == other)
       return false;
-    // if the grade is smaller, return true
-    if(grade < other.grade){
+    // if type is smaller than it is considered smaller
+    if(type < other.type)
         return true;
-    }
-    // otherwise check if the grade is equal
-    if(grade == other.grade)
-    {
-        // now, if the grade is equal, but the type is smaller
-        // than it is still smaller, return true
-        if(type < other.type)
+    // if the type is equal, check that the model is smaller
+    if(type == other.type)
+        if(model < other.model)
             return true;
-        // if the type is equal, check that the model is smaller
-        if(type == other.type)
-            if(model < other.model)
-                return true;
-    }
-    // the grade is either smaller
-    // or the grade is equal but the type is smaller
-    // or the grade and type are equal but the model is smaller
+    // the type is either larger
+    // or the types are equal but the model is larger
     // in all of these cases the car is a better model
     // return false
     return false; 
@@ -1156,6 +1165,144 @@ void Model::setModel(int type, int model)
 }
 
 std::ostream& operator<<(std::ostream& os, const Model& car)
+{
+    os << car.type << "." << car.model << "." << car.grade;
+    //os << car.model ;
+    return os;
+}
+
+
+//default constructor for gradedmodel. all fields initialized to 0
+GradedModel::GradedModel():type(0), model(0), grade(0), numsold(0){};
+
+// constuctor for GradedModel. grade is initialized to 0 
+GradedModel::GradedModel(int type, int model):type(type),model(model){};
+
+// parameterized constuctor for GradedModel. 
+GradedModel::GradedModel(int type, int model, int grade, int numSold):type(type),model(model), grade(grade), numsold(numSold){};
+
+// updates grade when a model recieves a complaint
+void GradedModel::complaint(int numMonths)
+{
+    int lowered = 100/numMonths;
+    grade = grade - lowered;
+}
+
+// comparing operator, returns true if equal
+// cars are equal to one another if
+// both type and model are equal const
+bool GradedModel::operator==(const GradedModel& other) const
+{
+    if(type == other.type && model == other.model)
+        return true;
+    return false;
+}
+
+// comparing operator, returns true if equal
+// cars are equal to one another if
+// both type and model are equal
+bool GradedModel::operator==(const GradedModel& other) 
+{
+    if(type == other.type && model == other.model)
+        return true;
+    return false;
+}
+
+// comparing operator, compares grades of cars
+bool GradedModel::operator<(const GradedModel& other)
+{
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
+    // if the grade is smaller, return true
+    if(grade < other.grade){
+        return true;
+    }
+    // otherwise check if the grade is equal
+    if(grade == other.grade)
+    {
+        // now, if the grade is equal, but the type is smaller
+        // than it is still smaller, return true
+        if(type < other.type)
+            return true;
+        // if the type is equal, check that the model is smaller
+        if(type == other.type)
+            if(model < other.model)
+                return true;
+    }
+    // the grade is either smaller
+    // or the grade is equal but the type is smaller
+    // or the grade and type are equal but the model is smaller
+    // in all of these cases the car is a better model
+    // return false
+    return false; 
+}
+// comparing operator, compares grades of cars const
+bool GradedModel::operator<(const GradedModel& other) const
+{
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
+    // if the grade is smaller, return true
+    if(grade < other.grade){
+        return true;
+    }
+    // otherwise check if the grade is equal
+    if(grade == other.grade)
+    {
+        // now, if the grade is equal, but the type is smaller
+        // than it is still smaller, return true
+        if(type < other.type)
+            return true;
+        // if the type is equal, check that the model is smaller
+        if(type == other.type)
+            if(model < other.model)
+                return true;
+    }
+    // the grade is either smaller
+    // or the grade is equal but the type is smaller
+    // or the grade and type are equal but the model is smaller
+    // in all of these cases the car is a better model
+    // return false
+    return false; 
+}
+
+// comparing operator, compares grades of cars
+bool GradedModel::operator>(const GradedModel& other)
+{
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
+    // check if the model is smaller
+    // if not, it is larger as there are no two different models that are equal
+    return !(*this < other);
+}
+
+// comparing operator, compares grades of cars const
+bool GradedModel::operator>(const GradedModel& other) const
+{
+    // if the models have the same model and type
+    // we should consider them equal
+    if((*this) == other)
+      return false;
+    // check if the model is smaller
+    // if not, it is larger as there are no two different models that are equal
+    return !(*this < other);
+}
+
+void GradedModel::setGradedModel(int type, int model, int grade, int numsold)
+{
+    (*this).type= type;
+    (*this).model= model;
+    (*this).grade= grade;
+    (*this).numsold= numsold;
+
+}
+
+std::ostream& operator<<(std::ostream& os, const GradedModel& car)
 {
     os << car.type << "." << car.model << "." << car.grade;
     //os << car.model ;
@@ -1376,7 +1523,7 @@ DSW::DSW()
 {
     typestree = new AVLTree<CarType>();
     zerostree = new AVLTree<CarType>();
-    gradedmodels = new AVLTree<Model>();
+    gradedmodels = new AVLTree<GradedModel>();
     bestsellers = new AVLTree<MostSold>();
 }
 
@@ -1476,7 +1623,10 @@ StatusType DSW::removeCarType(int typeId)
     {
         // remove the model from gradedmodels
         // no need to check whats actually there
-        gradedmodels->remove(type_to_remove->data.models->root->data);
+        int model = type_to_remove->data.models->root->data.model;
+        int grade = type_to_remove->data.models->root->data.grade;
+        int numsold = type_to_remove->data.models->root->data.numSold;
+        gradedmodels->remove(GradedModel(typeId, model, grade, numsold));
         // remove the model from the typestree tree node
         type_to_remove->data.models->remove(type_to_remove->data.models->root->data);
     }
@@ -1572,7 +1722,11 @@ StatusType DSW::sellCar(int typeId, int modelId)
         assert(zerostree->findNode(finder));
         zerostree->findNode(finder)->data.models->insert(model_to_insert);
         // remove from gradedmodels
-        gradedmodels->remove(model_to_insert);
+        // using the old grade
+        // and the oldnumsold
+        int old_grade = grade - 10;
+        int old_numsold = sold - 1;
+        gradedmodels->remove(GradedModel(typeId,modelId,old_grade,old_numsold));
     }
     else
     {
@@ -1585,9 +1739,12 @@ StatusType DSW::sellCar(int typeId, int modelId)
             assert(zerostree->findNode(finder));
             zerostree->findNode(finder)->data.models->remove(Model(typeId,modelId));
             // insert into graded models
+            // using the current grade
+            // and current numsold
             try
             {
-                gradedmodels->insert(model_to_insert);
+
+                gradedmodels->insert(GradedModel(typeId, modelId, grade, sold));
             }
             catch (std::exception& e)
             {
@@ -1599,8 +1756,12 @@ StatusType DSW::sellCar(int typeId, int modelId)
         {
             try
             {
-                gradedmodels->remove(model_to_insert);
-                gradedmodels->insert(model_to_insert);
+                // remove using the old grade and numsold
+                int old_grade = grade - 10;
+                int old_numsold = sold - 1;
+                gradedmodels->remove(GradedModel(typeId, modelId, old_grade, old_numsold));
+                // update with new
+                gradedmodels->insert(GradedModel(typeId, modelId, grade, sold));
             }
             catch (std::exception& e)
             {
@@ -1640,6 +1801,8 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     // update model's grade in the typestree
     int original_grade = m_to_complaint->data.grade;
     int complaint_grade = t / 100;
+    int new_grade = original_grade - complaint_grade;
+    int numsold = m_to_complaint->data.numSold;
     m_to_complaint->data.grade = m_to_complaint->data.grade - complaint_grade;
 
     // initialize the model we want to insert to models tree
@@ -1656,17 +1819,37 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
             // remove the model from the zeros tree
             ct_node_zeros->data.removeModel(modelID);
             // insert te model to the grade tree
-            gradedmodels->insert(model_to_add);
+            // using the current grade and numsold
+            gradedmodels->insert(GradedModel(typeID, modelID, new_grade, numsold));
             return SUCCESS;
         }
     }
 
     // if the model isnt in the zeros, it must be in the grademodels
+    // check if the grade how now returned to zero
+    // if so we must remove it from the gradedmodels
+    // and insert into the zerostree
+    if(new_grade == 0)
+    {
+        // find the type in the zerostree 
+        AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+        if (ct_node_zeros != nullptr)
+        {
+            // insert the model into the zeros tree
+            ct_node_zeros->data.addModel(modelID, 0, numsold);
+            // remove from the gradedmodels tree
+            // using the old grade
+            gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
+            return SUCCESS;
+        }        
+    }
     // find the model in the gradesmodel 
-    Model model_to_remove = Model(typeID, modelID, original_grade, m_to_complaint->data.numSold);
-    //check if model_to_remove is in models tree
-    gradedmodels->remove(model_to_remove);
-    gradedmodels->insert(model_to_add);
+    // the only case left is the grade was not zero before
+    // and is not 0 now
+    //remove the previous grade
+    gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
+    // reinsert using the new grade
+    gradedmodels->insert(GradedModel(typeID, modelID, new_grade, numsold));
     return SUCCESS;
 }
 
@@ -1901,21 +2084,37 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 	return SUCCESS;
 }
 
+
+
 // used to debug sellcar
 int main() 
 {
   DSW cd;
+  
   cd.addCarType(4,6);
   cd.addCarType(3,4);
-  
-  cd.sellCar(4,2);
-  cd.sellCar(3,0);
-  std::cout << "id 4 zeros tree after sale, 4,0"  << std::endl;
-  cd.zerostree->highest->data.models->print();
+  std::cout << "id 3 types tree before sale, 3,0"  << std::endl;
+  cd.typestree->lowest->data.models->print();
   std::cout <<              "----------------------"  << std::endl;
-  // std::cout << "id 3 models tree"  << std::endl;
-  // cd.typestree->lowest->data.models->print();
-  std::cout << "id 3 zero tree after sale 3,2"  << std::endl;
+  
+  cd.sellCar(3,0);
+  cd.gradedmodels->print();
+  std::cout << "^^graded model above^^"  << std::endl;
+  std::cout << "id 3 types tree after sale, 3,0"  << std::endl;
+  cd.typestree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 zero tree after sale 3,0"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(4,0);
+  std::cout << "id 3 types tree after  sale, 3,0"  << std::endl;
+  cd.typestree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 zero tree after  sale 3,0"  << std::endl;
   cd.zerostree->lowest->data.models->print();
   std::cout <<              "----------------------"  << std::endl;
   std::cout << "best sellers"  << std::endl;
@@ -1923,7 +2122,6 @@ int main()
   std::cout <<              "----------------------"  << std::endl;
   std::cout << "graded models"  << std::endl;
   cd.gradedmodels->print();
-  std::cout << cd.typestree->lowest->data.best_seller->data << std::endl;
   return 0;
 }
 
