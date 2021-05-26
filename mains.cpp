@@ -156,3 +156,111 @@ int main() {
   } // for
   return 0;
 }
+
+
+// used for debuging dsw
+int main() 
+{
+  DSW cd;
+  // cd.sellCarr(4, 4);
+  // cd.MakeComplaint(4, 4, 2);
+  // int types[3]= {0, 0, 0};
+  // int models[3]= {0, 0, 0};
+  // cd.GetWorstModels(3, types , models);
+  // cd.sellCarr(6, 1);
+  // std::cout << types[0] <<" , "<< types[1] <<" , "<< types[4] <<" , ";
+  // std::cout << models[0] <<" , "<< models[1] <<" , "<< models[4] <<" , ";
+  
+  cd.addCarType(4,6);
+  cd.addCarType(3,4);
+  // cd.addCarType(6,3);
+  std::cout << "best sellers"  << std::endl;
+  cd.bestsellers->print();
+  // cd.typestree->highest->data.models->print();
+  // cd.typestree->lowest->data.models->print();
+  // cd.removeCarType(6);
+  // std::cout << "removed" << std::endl;
+  std::cout << "id 4 zeros tree before sale"  << std::endl;
+  cd.zerostree->highest->data.models->print();
+  std::cout << "id 3 zeros tree before sale"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  // cd.bestsellers->print();
+  cd.sellCar(4,3);
+  cd.sellCar(3,2);
+  // if(cd.sellCar(6,1) == FAILURE)
+  //   std::cout << "no such typeId"  << std::endl;
+  std::cout << "id 4 zeros tree after sale, 4,3"  << std::endl;
+  cd.zerostree->highest->data.models->print();
+  // std::cout << "id 3 models tree"  << std::endl;
+  // cd.typestree->lowest->data.models->print();
+  std::cout << "id 3 zero tree after sale 3,2"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout << "best sellers"  << std::endl;
+  cd.bestsellers->print();
+  std::cout << "graded models"  << std::endl;
+  cd.gradedmodels->print();
+  return 0;
+}
+ 
+// main used to debug insert
+int main() {
+
+  AVLTree<Model> *tree = new AVLTree<Model>();
+  
+  tree->insert(Model(4,3));
+  tree->insert(Model(4,3,10,1));
+  tree->insert(Model(4,3,10,2));
+  tree->insert(Model(4,3,10,3));
+  tree->insert(Model(4,3,10,5));
+  tree->print();
+  tree->remove((Model(4,3)));
+  tree->print();
+  tree->insert(Model(4,3,10,1));
+  tree->print();
+  tree->remove(Model(4,2));
+  tree->insert(Model(4,2,52,2));
+  tree->print();
+}
+
+
+// used to debug sellcar DSW
+int main() 
+{
+  DSW cd;
+  cd.addCarType(4,6);
+  cd.addCarType(3,4);
+  std::cout << "best sellers"  << std::endl;
+  cd.bestsellers->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 4 zeros tree before sale"  << std::endl;
+  cd.zerostree->highest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 4 types tree before sale"  << std::endl;
+  cd.typestree->highest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 types tree before sale"  << std::endl;
+  cd.typestree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 zeros tree before sale"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  // cd.bestsellers->print();
+  cd.sellCar(4,3);
+  cd.sellCar(3,2);
+  // if(cd.sellCar(6,1) == FAILURE)
+  //   std::cout << "no such typeId"  << std::endl;
+  std::cout << "id 4 zeros tree after sale, 4,3"  << std::endl;
+  cd.zerostree->highest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  // std::cout << "id 3 models tree"  << std::endl;
+  // cd.typestree->lowest->data.models->print();
+  std::cout << "id 3 zero tree after sale 3,2"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "best sellers"  << std::endl;
+  cd.bestsellers->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "graded models"  << std::endl;
+  cd.gradedmodels->print();
+  return 0;
+}

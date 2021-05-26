@@ -37,12 +37,13 @@ CarType::CarType(int type, int numOfModels):type(type)
 CarType::CarType(const CarType& cartype):type(cartype.type)
 {
     models = const_cast<AVLTree<Model>*>(cartype.models);
+    best_seller = cartype.best_seller;
 }
 
 //destructor for CarType, must delete models
 CarType::~CarType()
 {
-    //delete models;
+    delete models;
 }
 // returns pointer to most sold model
 AVLTree<Model>::Node* CarType::getMostSold()
