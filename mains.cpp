@@ -264,3 +264,42 @@ int main()
   cd.gradedmodels->print();
   return 0;
 }
+
+// used to debug sellcar
+int main() 
+{
+  DSW cd;
+  
+  cd.addCarType(4,6);
+  cd.addCarType(3,4);
+  std::cout << "id 3 types tree before sale, 3,0"  << std::endl;
+  cd.typestree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  
+  cd.sellCar(3,0);
+  cd.gradedmodels->print();
+  std::cout << "^^graded model above^^"  << std::endl;
+  std::cout << "id 3 types tree after sale, 3,0"  << std::endl;
+  cd.typestree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 zero tree after sale 3,0"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(4,0);
+  std::cout << "id 3 types tree after  sale, 3,0"  << std::endl;
+  cd.typestree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "id 3 zero tree after  sale 3,0"  << std::endl;
+  cd.zerostree->lowest->data.models->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "best sellers"  << std::endl;
+  cd.bestsellers->print();
+  std::cout <<              "----------------------"  << std::endl;
+  std::cout << "graded models"  << std::endl;
+  cd.gradedmodels->print();
+  return 0;
+}
