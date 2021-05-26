@@ -1839,71 +1839,67 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     int complaint_grade = 100 / t;
     int new_grade = original_grade - complaint_grade;
     int numsold = m_to_complaint->data.numSold;
-    m_to_complaint->data.grade = m_to_complaint->data.grade - complaint_grade;
+    m_to_complaint->data.grade = new_grade;
 
     // initialize the model we want to insert to models tree
-    Model model_to_add= Model(typeID, modelID, m_to_complaint->data.grade, m_to_complaint->data.numSold);
+    Model model_to_add= Model(typeID, modelID, new_grade , m_to_complaint->data.numSold);
 
     // check if the type is in the zerostree
-    // if the origanl grade was 0
+    // if the original grade was 0
     // then the model was in the zeros tree
     // find in the zeros tree and remove.
     // insert into gradedmodels tree
     if(original_grade == 0)
     {
       AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
-      if (ct_node_zeros != nullptr)
-      {
-          // check if the model is in the ct_node_zeros
-          AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
-          if (m_node_zeros != nullptr)
-          {
-              // remove the model from the zeros tree
-              ct_node_zeros->data.removeModel(modelID);
-              // check if this zeros tree of type typeid is empty
-              // if so remove from zeros tree
-              if(ct_node_zeros->data.models->root == nullptr)
-              { 
-                zerostree->remove(ct_node_zeros->data);
-              }
-              // insert te model to the grade tree
-              // using the current grade and numsold
-              gradedmodels->insert(GradedModel(typeID, modelID, new_grade, numsold));
-              return SUCCESS;
-          }
+      // find the model in the ct_node_zeros
+      AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
+      // remove the model from the zeros tree
+      ct_node_zeros->data.removeModel(modelID);
+      // check if this zeros tree of type typeid is empty
+      // if so remove from zeros tree
+      if(ct_node_zeros->data.models->root == nullptr)
+      { 
+        zerostree->remove(ct_node_zeros->data);
       }
+
+      // insert the model to the grade tree
+      // using the current grade and numsold
+      gradedmodels->insert(GradedModel(typeID, modelID, new_grade, numsold));
+      return SUCCESS;
     }
+
     // if the model isnt in the zeros, it must be in the grademodels
     // check if the grade has now returned to zero
     // if so we must remove it from the gradedmodels
     // and insert into the zerostree
     if(new_grade == 0)
     {
-        // find the type in the zerostree 
-        AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
-        if(!ct_node_zeros)
-        {
-          // create a cartype
-          // remove the default model inside
-          // insert the wanted model
-          CarType* to_insert = new CarType(typeID,1);
-          to_insert->models->remove(Model(typeID,0));
-          to_insert->models->insert(Model(typeID,modelID,0,numsold));
-          zerostree->insert(*to_insert);
-          // remove from the gradedmodels tree
-          // using the old grade
-          gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
-          return SUCCESS;
-        }
-        if (ct_node_zeros != nullptr)
-        {
-            // insert the model into the zeros tree
-            ct_node_zeros->data.models->insert(Model(typeID,modelID, 0, numsold));
-            // remove from the gradedmodels tree
-            // using the old grade
-            gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
-            return SUCCESS;
-        }        
+      // find the type in the zerostree 
+      AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
+      if(!ct_node_zeros)
+      {
+        // create a cartype
+        // remove the default model inside
+        // insert the wanted model
+        CarType* to_insert = new CarType(typeID,1);
+        to_insert->models->remove(Model(typeID,0));
+        to_insert->models->insert(Model(typeID, modelID, 0, numsold));
+        zerostree->insert(*to_insert);
+        // remove from the gradedmodels tree
+        // using the old grade
+        gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
+        return SUCCESS;
+      }
+      if (ct_node_zeros != nullptr)
+      {
+        // insert the model into the zeros tree
+        ct_node_zeros->data.models->insert(Model(typeID, modelID, 0, numsold));
+        // remove from the gradedmodels tree
+        // using the old grade
+        gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));
+        return SUCCESS;
+      }        
     }
     // find the model in the gradesmodel 
     // the only case left is the grade was not zero before
@@ -2190,8 +2186,10 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 }
 
 
+
 int main() 
 {
+<<<<<<< HEAD
   AVLTree<int> tree = AVLTree<int>();
   tree.insert(2);
   tree.insert(0);
@@ -2218,3 +2216,26 @@ int main()
   std::cout << "lowest data: " <<tree2.lowest->data << " highest data: " << tree2.highest->data << std::endl;
   std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
 }
+=======
+  DSW cd;
+  cd.addCarType(4,6);
+  cd.addCarType(3,4);
+
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(3,0);
+  cd.sellCar(4,0);
+
+  cd.sellCar(4,0);
+  cd.sellCar(3,1);
+  cd.sellCar(3,2);
+  cd.sellCar(3,3);
+
+  cd.MakeComplaint(3, 1, 1);
+  cd.MakeComplaint(3, 0, 2);
+  cd.MakeComplaint(3, 0, 2);
+
+ 
+>>>>>>> 38f64268a5f3cc72aaaaa5f97582e65a99bce2fa
