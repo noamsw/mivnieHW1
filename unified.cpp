@@ -546,6 +546,7 @@ bool AVLTree<T>::remove(const T& t) {
 				if (p == nullptr) {
 					setRoot(nullptr);
 					delete toBeRemoved;
+          toBeRemoved = nullptr;
 					lowest = nullptr;
 					highest = nullptr;
 				}
