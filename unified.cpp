@@ -1849,6 +1849,8 @@ StatusType DSW::sellCar(int typeId, int modelId)
 
 StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
 {
+    try
+    {
     // checking input (in wraped fuction, check if DS==NULL)
     if (typeID <= 0 || modelID < 0 || t==0)
     {
@@ -1921,7 +1923,15 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
         // create a cartype
         // remove the default model inside
         // insert the wanted model
-        CarType* to_insert = new CarType(typeID,1);
+        CarType* to_insert = nullptr;
+        try
+        {
+          CarType* to_insert = new CarType(typeID,1);
+        }
+        catch(const std::exception& e)
+        {
+          return ALLOCATION_ERROR;
+        }
         to_insert->models->remove(Model(typeID,0));
         to_insert->models->insert(Model(typeID, modelID, 0, numsold));
         zerostree->insert(*to_insert);
@@ -1948,10 +1958,17 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     // reinsert using the new grade
     gradedmodels->insert(GradedModel(typeID, modelID, new_grade, numsold));
     return SUCCESS;
+    }
+  catch(std::exception& e)
+  {
+    return ALLOCATION_ERROR;
+  }
 }
 
 StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
 {
+  try
+  {
     //checking input
     //if typeID==0 && DS is empty, we should throe FAILURE
     if (typeID<0)
@@ -1984,6 +2001,11 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
     //the typeId is in the system
     *modelID = ct_node->data.getBestSeller();
     return SUCCESS;
+  }
+  catch(std::exception& e)
+  {
+    return ALLOCATION_ERROR;
+  }
 }
 
 
@@ -2225,11 +2247,13 @@ void inorderLowestPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<Grad
 // on parent node
 StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 {
-    // checking the input
-    if (numOfModels<=0)
-    {
-        return INVALID_INPUT;
-    }
+  try
+  {
+  // checking the input
+  if (numOfModels<=0)
+  {
+      return INVALID_INPUT;
+  }
 
 	// initializing int_ptr as an index to the arrays
 	// model&type ID's are inserted in the arr[index]
@@ -2284,6 +2308,11 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 	}
 
 	return SUCCESS;
+  }
+  catch(std::exception& e)
+  {
+    return ALLOCATION_ERROR;
+  }
 }
 
 int main() 
@@ -2337,3 +2366,5 @@ int main()
 	  }
   
   }
+
+  
