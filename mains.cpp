@@ -396,6 +396,38 @@
 //   //cd.gradedmodels->print();
 //   std::cout << cd.zerostree->lowest->data.models->lowest->data <<std::endl ;
 //   /*
+	//   cd.sellCar(3,0);
+	//   cd.sellCar(3,0);
+	//   cd.sellCar(3,0);
+	//   cd.sellCar(3,2);
+	//   cd.sellCar(3,3);
+	//   cd.sellCar(3,4);
+	//   cd.sellCar(3,5);
+	//   cd.sellCar(3,6);
+	//   cd.sellCar(3,7);
+	//   cd.sellCar(4,0);
+	//   cd.sellCar(4,1);
+	//   cd.sellCar(4,2);
+	//   cd.sellCar(4,3);
+	//   cd.sellCar(4,6);
+	//   cd.sellCar(4,7);
+	//   cd.sellCar(4,4);
+	//   cd.sellCar(3,3);
+	
+	//   cd.MakeComplaint(3, 0, 1);
+	//   cd.MakeComplaint(3, 1, 1);
+    // std::cout << "zeros tree of 3" << std::endl;
+    // cd.zerostree->lowest->data.models->print();
+    // std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    // std::cout << "zeros tree of 4" << std::endl;
+    // cd.zerostree->highest->data.models->print();
+    // std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    // std::cout << "graded models" << std::endl;
+    // cd.gradedmodels->print();
+    // std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    // std::cout << "lowest" << std::endl;
+    // std::cout << cd.gradedmodels->lowest->data << std::endl;
+    // std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
 //   cd.GetWorstModels(4, t_arr, m_arr);
 
 //   for (int i=0; i<4; i++)
@@ -408,55 +440,59 @@
 //   return 0;
 // }
 
+// #include "unified.cpp"
+
+// int main() 
+// 	{
+// 	  DSW cd;
+// 	  cd.addCarType(3,10);
+// 	  cd.addCarType(4,10);
+
+// 	  int t_arr[20];
+// 	  int m_arr[20];
+//       for(int i=0; i<20; i++)
+//       {
+//           t_arr[i]=0;
+//           m_arr[i]=0;
+//       }
+	
+// 	  std::cout << cd.GetWorstModels(20, t_arr, m_arr) << std::endl;
+	
+// 	  for (int i=0; i<20; i++)
+// 	  {
+// 	    std::cout << "t:" <<t_arr[i] << std::endl;
+// 	    std::cout << "m:" <<m_arr[i] << std::endl;
+// 	    std::cout << std::endl;
+// 	  }
+  
+//   }
 
 
 // int main() 
 // 	{
 // 	  DSW cd;
-// 	  cd.addCarType(4,8);
-// 	  cd.addCarType(3,9);
-// 	  cd.sellCar(3,0);
-// 	  cd.sellCar(3,0);
-// 	  cd.sellCar(3,0);
-// 	  cd.sellCar(3,2);
-// 	  cd.sellCar(3,3);
-// 	  cd.sellCar(3,4);
-// 	  cd.sellCar(3,5);
-// 	  cd.sellCar(3,6);
-// 	  cd.sellCar(3,7);
-// 	  cd.sellCar(4,0);
-// 	  cd.sellCar(4,1);
-// 	  cd.sellCar(4,2);
-// 	  cd.sellCar(4,3);
-// 	  cd.sellCar(4,6);
-// 	  cd.sellCar(4,7);
-// 	  cd.sellCar(4,4);
-// 	  cd.sellCar(3,3);
-	
-// 	  cd.MakeComplaint(3, 0, 1);
-// 	  cd.MakeComplaint(3, 1, 1);
-//     std::cout << "zeros tree of 3" << std::endl;
+// 	  cd.addCarType(3,10);
+// 	  cd.addCarType(4,10);
+//     cd.zerostree->print();
+//     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
 //     cd.zerostree->lowest->data.models->print();
-//     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
-//     std::cout << "zeros tree of 4" << std::endl;
+//     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
 //     cd.zerostree->highest->data.models->print();
-//     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
-//     std::cout << "graded models" << std::endl;
-//     cd.gradedmodels->print();
-//     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
-//     std::cout << "lowest" << std::endl;
-//     std::cout << cd.gradedmodels->lowest->data << std::endl;
-//     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
-
-// 	  int t_arr[8]={0, 0, 0, -1, -1, -1, -1, -1};
-// 	  int m_arr[8]={0, 0, 0, -1, -1, -1 , -1, -1};
+//     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+// 	  int t_arr[20];
+// 	  int m_arr[20];
+//       for(int i=0; i<20; i++)
+//       {
+//           t_arr[i]=0;
+//           m_arr[i]=0;
+//       }
+    
+// 	  std::cout << cd.GetWorstModels(20, t_arr, m_arr) << std::endl;
 	
-// 	  cd.GetWorstModels(8, t_arr, m_arr);
-	
-// 	  for (int i=0; i<8; i++)
+// 	  for (int i=0; i<20; i++)
 // 	  {
-// 	    std::cout << t_arr[i] << std::endl;
-// 	    std::cout << m_arr[i] << std::endl;
+// 	    std::cout << "t:" <<t_arr[i] << std::endl;
+// 	    std::cout << "m:" <<m_arr[i] << std::endl;
 // 	    std::cout << std::endl;
 // 	  }
   

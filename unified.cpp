@@ -2175,7 +2175,7 @@ void inorderZerosCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::Node* 
   inorderZerosCT(t_arr, m_arr, index, node->getLeftChild(), numOfModels);
 
   // getting in to CarType's models
-  inorderZeroModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
+  inorderZeroLowestModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
 
   //recursive call to the right child
   inorderZerosCT(t_arr, m_arr, index, node->getRightChild(), numOfModels);
@@ -2322,6 +2322,7 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
     return ALLOCATION_ERROR;
   }
 }
+
 
 #endif
 
