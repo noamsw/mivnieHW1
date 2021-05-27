@@ -10,6 +10,9 @@ CarType::CarType()
 }
 CarType::CarType(int type, int numOfModels):type(type)
 {
+    
+    models = new AVLTree<Model>();
+    
     //initializing a sorted array for insert into AVLTree
     // had to use new as size is determined during runtime
     Model* modelsarr= new Model[numOfModels];
@@ -82,6 +85,7 @@ bool CarType::operator==(const CarType& cartype) const
 {
     return this->type == cartype.type;
 }
+
 
 bool CarType::addModel(int model_num, int grade, int numSold)
 {
