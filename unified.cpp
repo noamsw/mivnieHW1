@@ -2083,7 +2083,7 @@ void inorderZerosLowestCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::
 		return;
 	}	
 
-  inorderZeroModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
+  inorderZeroLowestModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
   inorderZerosCT(t_arr, m_arr, index, node->getRightChild(), numOfModels);
   inorderZerosLowestCT(t_arr, m_arr, index, node->getParent(), numOfModels);
 }
@@ -2185,28 +2185,37 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 	return SUCCESS;
 }
 
-
-
 int main() 
-{
-  DSW cd;
-  cd.addCarType(4,6);
-  cd.addCarType(3,4);
-
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(4,0);
-
-  cd.sellCar(4,0);
-  cd.sellCar(3,1);
-  cd.sellCar(3,2);
-  cd.sellCar(3,3);
-
-  cd.MakeComplaint(3, 1, 1);
-  cd.MakeComplaint(3, 0, 2);
-  cd.MakeComplaint(3, 0, 2);
-
- 
+	{
+	  DSW cd;
+	  cd.addCarType(4,6);
+	  cd.addCarType(3,4);
+	
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(4,0);
+	  cd.sellCar(4,0);
+	  cd.sellCar(3,1);
+	  cd.sellCar(3,2);
+	  cd.sellCar(3,3);
+	
+	  cd.MakeComplaint(3, 0, 2);
+	  cd.MakeComplaint(3, 0, 2);
+	  cd.MakeComplaint(3, 1, 1);
+	
+	  int t_arr[8]={0, 0, 0, -1, -1, -1, -1, -1};
+	  int m_arr[8]={0, 0, 0, -1, -1, -1 , -1, -1};
+	
+	  cd.GetWorstModels(8, t_arr, m_arr);
+	
+	  for (int i=0; i<8; i++)
+	  {
+	    std::cout << t_arr[i] << std::endl;
+	    std::cout << m_arr[i] << std::endl;
+	    std::cout << std::endl;
+	  }
+  return 0;
+  }
