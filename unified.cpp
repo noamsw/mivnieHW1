@@ -1765,25 +1765,17 @@ StatusType DSW::sellCar(int typeId, int modelId)
           // remove the default model inside
           // insert the wanted model
           // this must be in a try
-          CarType* to_insert = nullptr;
           try
           {
             CarType* to_insert = new CarType(typeId,1);
+            to_insert->models->remove(Model(typeId,0));
+            to_insert->models->insert(Model(typeId,modelId,0,sold));
+            zerostree->insert(*to_insert);         
           }   
           catch (std::exception& e)
           {
               return ALLOCATION_ERROR;
           }
-          to_insert->models->remove(Model(typeId,0));
-          to_insert->models->insert(Model(typeId,modelId,0,sold));
-          try
-          {
-            zerostree->insert(*to_insert);
-          }   
-          catch (std::exception& e)
-          {
-              return ALLOCATION_ERROR;
-          }          
         }
         zerostree->findNode(finder)->data.models->insert(model_to_insert);
         // remove from gradedmodels
@@ -1885,7 +1877,7 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     m_to_complaint->data.grade = new_grade;
 
     // initialize the model we want to insert to models tree
-    Model model_to_add= Model(typeID, modelID, new_grade , m_to_complaint->data.numSold);
+    // Model model_to_add= Model(typeID, modelID, new_grade , m_to_complaint->data.numSold);
 
     // check if the type is in the zerostree
     // if the original grade was 0
@@ -1896,7 +1888,7 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
     {
       AVLTree<CarType>::Node* ct_node_zeros= zerostree->findNode(find_ct);
       // find the model in the ct_node_zeros
-      AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
+      // AVLTree<Model>::Node* m_node_zeros = ct_node_zeros->data.models->findNode(find_m);
       // remove the model from the zeros tree
       ct_node_zeros->data.removeModel(modelID);
       // check if this zeros tree of type typeid is empty
@@ -1925,18 +1917,17 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
         // create a cartype
         // remove the default model inside
         // insert the wanted model
-        CarType* to_insert = nullptr;
         try
         {
           CarType* to_insert = new CarType(typeID,1);
+          to_insert->models->remove(Model(typeID,0));
+          to_insert->models->insert(Model(typeID, modelID, 0, numsold));
+          zerostree->insert(*to_insert);
         }
         catch(const std::exception& e)
         {
           return ALLOCATION_ERROR;
         }
-        to_insert->models->remove(Model(typeID,0));
-        to_insert->models->insert(Model(typeID, modelID, 0, numsold));
-        zerostree->insert(*to_insert);
         // remove from the gradedmodels tree
         // using the old grade
         gradedmodels->remove(GradedModel(typeID, modelID, original_grade, numsold));

@@ -64,5 +64,6 @@ StatusType GetWorstModels(void *DS, int numOfModels, int *types, int *models)
 void Quit(void** DS)
 {
     delete ((DSW *)(*DS));
-    DS = NULL;
+    *DS = NULL;
 }
+
