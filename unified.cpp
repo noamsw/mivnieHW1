@@ -2239,26 +2239,32 @@ int main()
 	  DSW cd;
 	  cd.addCarType(4,6);
 	  cd.addCarType(3,4);
-	
 	  cd.sellCar(3,0);
 	  cd.sellCar(3,0);
 	  cd.sellCar(3,0);
-	  cd.sellCar(3,0);
-	  cd.sellCar(3,0);
-	  cd.sellCar(4,0);
-	  cd.sellCar(4,0);
 	  cd.sellCar(3,1);
-	  cd.sellCar(3,2);
+	  cd.sellCar(4,0);
+	  cd.sellCar(4,1);
+	  cd.sellCar(4,2);
+	  cd.sellCar(4,3);
+	  cd.sellCar(4,4);
 	  cd.sellCar(3,3);
 	
-	  cd.MakeComplaint(3, 0, 2);
-	  cd.MakeComplaint(3, 0, 2);
+	  cd.MakeComplaint(3, 0, 1);
 	  cd.MakeComplaint(3, 1, 1);
-    std::cout << "zeros tree of 4" << std::endl;
+    std::cout << "zeros tree of 3" << std::endl;
     cd.zerostree->lowest->data.models->print();
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    std::cout << "zeros tree of 4" << std::endl;
+    cd.zerostree->highest->data.models->print();
+    std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    std::cout << "graded models" << std::endl;
     cd.gradedmodels->print();
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    std::cout << "lowest" << std::endl;
+    std::cout << cd.gradedmodels->lowest->data << std::endl;
+    std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+
 	  int t_arr[8]={0, 0, 0, -1, -1, -1, -1, -1};
 	  int m_arr[8]={0, 0, 0, -1, -1, -1 , -1, -1};
 	
@@ -2271,4 +2277,4 @@ int main()
 	    std::cout << std::endl;
 	  }
   return 0;
-  }
+}
