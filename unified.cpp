@@ -2083,7 +2083,7 @@ void inorderZerosLowestCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::
 		return;
 	}	
 
-  inorderZeroModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
+  inorderZeroLowestModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
   inorderZerosCT(t_arr, m_arr, index, node->getRightChild(), numOfModels);
   inorderZerosLowestCT(t_arr, m_arr, index, node->getParent(), numOfModels);
 }
@@ -2185,57 +2185,37 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 	return SUCCESS;
 }
 
-
-
 int main() 
-{
-<<<<<<< HEAD
-  AVLTree<int> tree = AVLTree<int>();
-  tree.insert(2);
-  tree.insert(0);
-  tree.insert(3);
-  tree.insert(1);
-  tree.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  tree.remove(0);
-  tree.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  std::cout << "lowest data: " <<tree.lowest->data << " highest data: " << tree.highest->data << std::endl;
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-
-  AVLTree<int> tree2 = AVLTree<int>();
-  tree2.insert(1);
-  tree2.insert(0);
-  tree2.insert(3);
-  tree2.insert(2);
-  tree2.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  tree2.remove(3);
-  tree2.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  std::cout << "lowest data: " <<tree2.lowest->data << " highest data: " << tree2.highest->data << std::endl;
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-}
-=======
-  DSW cd;
-  cd.addCarType(4,6);
-  cd.addCarType(3,4);
-
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(3,0);
-  cd.sellCar(4,0);
-
-  cd.sellCar(4,0);
-  cd.sellCar(3,1);
-  cd.sellCar(3,2);
-  cd.sellCar(3,3);
-
-  cd.MakeComplaint(3, 1, 1);
-  cd.MakeComplaint(3, 0, 2);
-  cd.MakeComplaint(3, 0, 2);
-
- 
->>>>>>> 38f64268a5f3cc72aaaaa5f97582e65a99bce2fa
+	{
+	  DSW cd;
+	  cd.addCarType(4,6);
+	  cd.addCarType(3,4);
+	
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(3,0);
+	  cd.sellCar(4,0);
+	  cd.sellCar(4,0);
+	  cd.sellCar(3,1);
+	  cd.sellCar(3,2);
+	  cd.sellCar(3,3);
+	
+	  cd.MakeComplaint(3, 0, 2);
+	  cd.MakeComplaint(3, 0, 2);
+	  cd.MakeComplaint(3, 1, 1);
+	
+	  int t_arr[8]={0, 0, 0, -1, -1, -1, -1, -1};
+	  int m_arr[8]={0, 0, 0, -1, -1, -1 , -1, -1};
+	
+	  cd.GetWorstModels(8, t_arr, m_arr);
+	
+	  for (int i=0; i<8; i++)
+	  {
+	    std::cout << t_arr[i] << std::endl;
+	    std::cout << m_arr[i] << std::endl;
+	    std::cout << std::endl;
+	  }
+  return 0;
+  }
