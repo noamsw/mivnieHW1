@@ -1964,17 +1964,17 @@ void insertGradedModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<GradedMo
 }
 
 
-void inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
+AVLTree<GradedModel>::Node* inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
 											 int numOfModels, AVLTree<GradedModel>::Node* first_positive_node)
 {
 	// stop-conditions 
 	if(model_node == nullptr || (*index == numOfModels))
 	{
-		return;
+		return first_positive_node;
 	}
 
 	// recursive call, first start with the left childs (lower values)
-	inorderNegativeModel(t_arr, m_arr, index , model_node->getLeftChild(), numOfModels, first_positive_node);
+	first_positive_node = inorderNegativeModel(t_arr, m_arr, index , model_node->getLeftChild(), numOfModels, first_positive_node);
 
 	// push only the negative graded models to the arrays
 	if (model_node->data.grade < 0)
@@ -1986,20 +1986,21 @@ void inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedMode
 	if(model_node->data.grade > 0)
 	{
 		first_positive_node = model_node;
-		return;
+		return first_positive_node;
 	}
 
 	// recursive call for the right childs
-	inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
+	first_positive_node = inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
+  return first_positive_node;
 }
 
-void inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
+AVLTree<GradedModel>::Node* inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
 													 int numOfModels, AVLTree<GradedModel>::Node* first_positive_node)
 {
 	// stop-conditions
 	if (model_node == nullptr || (*index == numOfModels))
 	{
-		return;
+		return first_positive_node;
 	}
 
 	// we only want to insert negative nodes. 
@@ -2007,17 +2008,18 @@ void inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<Grad
 	{
 		// return the first positive node
 		first_positive_node = model_node;
-		return;
+		return first_positive_node;
 	}	
 
 	// the node exist and its negative, add it to the arr 
 	insertGradedModelToArr(t_arr, m_arr, index, model_node);
 
 	// use inorder algorithm to check&insert the node's right sub-tree
-	inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
+	first_positive_node = inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
 
 	// reccursive call to inorderLowestNegativeModel
-	inorderLowestNegativeModel(t_arr, m_arr, index, model_node->getParent(), numOfModels, first_positive_node);	
+	first_positive_node = inorderLowestNegativeModel(t_arr, m_arr, index, model_node->getParent(), numOfModels, first_positive_node);	
+  return first_positive_node;
 }
 
 
@@ -2147,8 +2149,7 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 	// and then we insert the positive graded models
 	AVLTree<GradedModel>::Node* first_positive_node = nullptr; //should i use new?
 
-	// inserting the negative graded models
-  inorderLowestNegativeModel(types, models , index, this->gradedmodels->lowest , numOfModels, first_positive_node);
+  first_positive_node= inorderLowestNegativeModel(types, models , index, this->gradedmodels->lowest , numOfModels, first_positive_node);
   
   // if we filled the arrayes, finish
   if(*index == numOfModels)
