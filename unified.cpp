@@ -1949,6 +1949,8 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
 
 
 // functions for getWorstModels
+// used to insert a Models info into arrays
+// updates the index
 void insertModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node)
 {
 	t_arr[*index]=model_node->data.type;
@@ -1956,6 +1958,9 @@ void insertModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* 
 	(*index)+=1;
 }
 
+// a function used to insert a gradedmodels info
+// in the relevent index in the arrays
+// updates the index
 void insertGradedModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node)
 {
 	t_arr[*index]=model_node->data.type;
@@ -1964,7 +1969,11 @@ void insertGradedModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<GradedMo
 }
 
 
+// recursive call used by inorderlowestneg
+// on the right subtree 
+// inserts the tree Inorder into the arrs
 AVLTree<GradedModel>::Node* inorderNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
+
 											 int numOfModels, AVLTree<GradedModel>::Node* first_positive_node)
 {
 	// stop-conditions 
@@ -1994,10 +2003,17 @@ AVLTree<GradedModel>::Node* inorderNegativeModel(int* t_arr, int* m_arr, int* in
   return first_positive_node;
 }
 
-AVLTree<GradedModel>::Node* inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,
-													 int numOfModels, AVLTree<GradedModel>::Node* first_positive_node)
+
+// recursive function that enters the models with a negative grade
+// into the provided arrays
+// it updates the index which keeps count of num models inserted
+// provides a pointer to the first positive graded model found
+// in order to continue the recursion later
+AVLTree<GradedModel>::Node* inorderLowestNegativeModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node,int numOfModels, AVLTree<GradedModel>::Node* first_positive_node)													 
 {
 	// stop-conditions
+  // we have insereted requested amount of models
+  // there are no more models
 	if (model_node == nullptr || (*index == numOfModels))
 	{
 		return first_positive_node;
@@ -2018,11 +2034,17 @@ AVLTree<GradedModel>::Node* inorderLowestNegativeModel(int* t_arr, int* m_arr, i
 	first_positive_node = inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
 
 	// reccursive call to inorderLowestNegativeModel
+
+  // after having inserted the current node,
+  // then its right sub tree
+  // it calls the function on the parent node
 	first_positive_node = inorderLowestNegativeModel(t_arr, m_arr, index, model_node->getParent(), numOfModels, first_positive_node);	
   return first_positive_node;
 }
 
-
+// recursive call used by inorderZerolowestmod
+// on the right subtree 
+// inserts the tree Inorder into the arrs
 void inorderZeroModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node, int numOfModels)
 {
 	// stop-conditions 
@@ -2041,6 +2063,9 @@ void inorderZeroModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* 
 	inorderZeroModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
 }
 
+// recursive function that enters the models with a grade of 0
+// into the provided arrays
+// it updates the index which keeps count of num models inserted
 void inorderZeroLowestModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node, int numOfModels)
 {
 	// stop-conditions
@@ -2056,6 +2081,9 @@ void inorderZeroLowestModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::
 	inorderZeroModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
 
 	// reccursive call to inorderZeroLowestModel
+  // after having inserted the current node,
+  // then its right sub tree
+  // it calls the function on the parent node
 	inorderZeroLowestModel(t_arr, m_arr, index, model_node->getParent(), numOfModels);	
 }
 
@@ -2077,6 +2105,8 @@ void inorderZerosCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::Node* 
   inorderZerosCT(t_arr, m_arr, index, node->getRightChild(), numOfModels);
 }
 
+// in order to start inserting models
+// we must first access correct node of zeros tree
 void inorderZerosLowestCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::Node* node, int numOfModels)
 {
 	// stop conditions:
@@ -2084,13 +2114,15 @@ void inorderZerosLowestCT(int* t_arr, int* m_arr, int* index, AVLTree<CarType>::
 	{
 		return;
 	}	
-
+  
   inorderZeroLowestModel(t_arr, m_arr, index, node->data.models->lowest, numOfModels);
   inorderZerosCT(t_arr, m_arr, index, node->getRightChild(), numOfModels);
   inorderZerosLowestCT(t_arr, m_arr, index, node->getParent(), numOfModels);
 }
 
-
+// recursive call used by inorderlowestPos
+// on the right subtree 
+// inserts the tree Inorder into the arr
 void inorderPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node, int numOfModels)
 {
 	// stop-conditions 
@@ -2109,6 +2141,10 @@ void inorderPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedMode
 	inorderPositiveModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
 }
 
+// reccursive call to inorderLowestPositivemod
+// after having inserted the current node,
+// then its right sub tree
+// it calls the function on the parent node
 void inorderLowestPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node, int numOfModels)
 {
 	// stop-conditions
@@ -2124,10 +2160,18 @@ void inorderLowestPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<Grad
 	inorderPositiveModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
 
 	// reccursive call to inorderLowestNegativeModel
+  // after having inserted the current node,
+  // then its right sub tree
+  // it calls the function on the parent node
 	inorderLowestPositiveModel(t_arr, m_arr, index, model_node->getParent(), numOfModels);
 }
 
-
+// a function used to return the worst models by grade
+// in order to do this we must traverse tree in a unique way
+// right sub tree in order
+// current node
+// if we have not finished recursivly call funtions
+// on parent node
 StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 {
     // checking the input
@@ -2142,7 +2186,7 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
   int i= 0;
   int* index = &i;
 
-	// initializing a null Model Node*
+	// initializing a null GradedModel Node*
 	// the node will keep the first positive graded model
 	// first we insert the negative graded models
 	// then we insert the zero graded models
@@ -2160,6 +2204,10 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
   } 
   
   // if we didnt fill the arrays, go to Zeros tree
+  // there access the lowest node, which is a tree of models
+  // insert said models as needed
+  // if finished return
+  // else go over zeros tree in the order needed
   inorderZerosLowestCT(types, models, index, zerostree->lowest, numOfModels);
 
   // if we filled the arrayes, finish
@@ -2206,7 +2254,11 @@ int main()
 	  cd.MakeComplaint(3, 0, 2);
 	  cd.MakeComplaint(3, 0, 2);
 	  cd.MakeComplaint(3, 1, 1);
-	
+    std::cout << "zeros tree of 4" << std::endl;
+    cd.zerostree->lowest->data.models->print();
+    std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    cd.gradedmodels->print();
+    std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
 	  int t_arr[8]={0, 0, 0, -1, -1, -1, -1, -1};
 	  int m_arr[8]={0, 0, 0, -1, -1, -1 , -1, -1};
 	
