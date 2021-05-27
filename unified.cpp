@@ -2189,34 +2189,6 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 
 int main() 
 {
-<<<<<<< HEAD
-  AVLTree<int> tree = AVLTree<int>();
-  tree.insert(2);
-  tree.insert(0);
-  tree.insert(3);
-  tree.insert(1);
-  tree.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  tree.remove(0);
-  tree.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  std::cout << "lowest data: " <<tree.lowest->data << " highest data: " << tree.highest->data << std::endl;
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-
-  AVLTree<int> tree2 = AVLTree<int>();
-  tree2.insert(1);
-  tree2.insert(0);
-  tree2.insert(3);
-  tree2.insert(2);
-  tree2.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  tree2.remove(3);
-  tree2.print();
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-  std::cout << "lowest data: " <<tree2.lowest->data << " highest data: " << tree2.highest->data << std::endl;
-  std::cout << "^^^^^^^^^^^^^^^^^" << std::endl;
-}
-=======
   DSW cd;
   cd.addCarType(4,6);
   cd.addCarType(3,4);
@@ -2238,4 +2210,3 @@ int main()
   cd.MakeComplaint(3, 0, 2);
 
  
->>>>>>> 38f64268a5f3cc72aaaaa5f97582e65a99bce2fa
