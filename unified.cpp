@@ -1560,9 +1560,18 @@ DSW::~DSW()
 // inserting it into the typetree, and zeroestree
 StatusType DSW::addCarType(int typeId, int numOfModels)
 {
+  try
+  {
     // check that the input is correct
     if( typeId<=0 || numOfModels<=0 )
         return INVALID_INPUT;
+    
+    // check if the cartype alredy exists in the system
+    // if so return failure
+    if(typestree->findNode(CarType(typeId, 1)))
+    {
+        return FAILURE;
+    }
     CarType* to_insert = nullptr;
     try
     {
@@ -1571,11 +1580,6 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     catch (std::exception& e)
     {
         return ALLOCATION_ERROR;
-    }
-    if(typestree->findNode(*to_insert))
-    {
-        delete to_insert;
-        return FAILURE;
     }
     try
     {
@@ -1595,7 +1599,7 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     // do i have to delete all the trees? 
     catch(std::exception& e)
     {
-        delete zeroes_insert;
+        // delete to_insert; this may cause mem err
         return ALLOCATION_ERROR;
     }
     // insert must also be wrapped in try catch
@@ -1611,11 +1615,18 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
         return ALLOCATION_ERROR;
     }
     return SUCCESS;
+  }
+  catch(std::exception& e)
+  {
+    return ALLOCATION_ERROR;
+  }
 }
 
 // removes a car type from the system
 StatusType DSW::removeCarType(int typeId)
 {
+  try
+  {
     // check validity of input
     if(typeId <= 0)
         return INVALID_INPUT;
@@ -1650,12 +1661,19 @@ StatusType DSW::removeCarType(int typeId)
     }
     typestree->remove(to_remove);
     return SUCCESS;
+  }
+  catch(std::exception& e)
+  {
+    return ALLOCATION_ERROR;
+  }
 }
 
 // Sell a car of typeid, model id and updates system
 // throws relevent exceptions
 StatusType DSW::sellCar(int typeId, int modelId)
 {
+    try
+    {
     // check arguments
     if(typeId <= 0 || modelId <0)
         return INVALID_INPUT;
@@ -1744,10 +1762,26 @@ StatusType DSW::sellCar(int typeId, int modelId)
           // create a cartype
           // remove the default model inside
           // insert the wanted model
-          CarType* to_insert = new CarType(typeId,1);
+          // this must be in a try
+          CarType* to_insert = nullptr;
+          try
+          {
+            CarType* to_insert = new CarType(typeId,1);
+          }   
+          catch (std::exception& e)
+          {
+              return ALLOCATION_ERROR;
+          }
           to_insert->models->remove(Model(typeId,0));
           to_insert->models->insert(Model(typeId,modelId,0,sold));
-          zerostree->insert(*to_insert);
+          try
+          {
+            zerostree->insert(*to_insert);
+          }   
+          catch (std::exception& e)
+          {
+              return ALLOCATION_ERROR;
+          }          
         }
         zerostree->findNode(finder)->data.models->insert(model_to_insert);
         // remove from gradedmodels
@@ -1806,6 +1840,11 @@ StatusType DSW::sellCar(int typeId, int modelId)
         }      
     } 
     return SUCCESS;   
+    }
+  catch(std::exception& e)
+  {
+    return ALLOCATION_ERROR;
+  }
 }
 
 StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
@@ -2250,16 +2289,23 @@ StatusType DSW::GetWorstModels(int numOfModels, int *types, int *models)
 int main() 
 	{
 	  DSW cd;
-	  cd.addCarType(4,6);
-	  cd.addCarType(3,4);
+	  cd.addCarType(4,8);
+	  cd.addCarType(3,9);
 	  cd.sellCar(3,0);
 	  cd.sellCar(3,0);
 	  cd.sellCar(3,0);
-	  cd.sellCar(3,1);
+	  cd.sellCar(3,2);
+	  cd.sellCar(3,3);
+	  cd.sellCar(3,4);
+	  cd.sellCar(3,5);
+	  cd.sellCar(3,6);
+	  cd.sellCar(3,7);
 	  cd.sellCar(4,0);
 	  cd.sellCar(4,1);
 	  cd.sellCar(4,2);
 	  cd.sellCar(4,3);
+	  cd.sellCar(4,6);
+	  cd.sellCar(4,7);
 	  cd.sellCar(4,4);
 	  cd.sellCar(3,3);
 	
