@@ -1770,7 +1770,15 @@ StatusType DSW::sellCar(int typeId, int modelId)
             CarType* to_insert = new CarType(typeId,1);
             to_insert->models->remove(Model(typeId,0));
             to_insert->models->insert(Model(typeId,modelId,0,sold));
-            zerostree->insert(*to_insert);         
+            try
+            {
+              zerostree->insert(*to_insert);         
+            }
+            catch(const std::exception& e)
+            {
+              delete to_insert;
+            }
+            
           }   
           catch (std::exception& e)
           {
@@ -1921,7 +1929,14 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
         {
           CarType* to_insert = new CarType(typeID,1);
           to_insert->models->remove(Model(typeID,0));
-          to_insert->models->insert(Model(typeID, modelID, 0, numsold));
+          try
+          {
+            to_insert->models->insert(Model(typeID, modelID, 0, numsold));
+          }
+          catch(const std::exception& e)
+          {
+            delete to_insert;
+          }
           zerostree->insert(*to_insert);
         }
         catch(const std::exception& e)
