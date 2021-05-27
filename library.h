@@ -27,7 +27,7 @@ typedef enum {
     INVALID_INPUT = -3
 } StatusType;
 
-/*
+
 void *Init();
 
 StatusType AddCarType(void *DS, int typeID, int numOfModels);
@@ -43,7 +43,7 @@ StatusType GetBestSellerModelByType(void *DS, int typeID, int * modelID);
 StatusType GetWorstModels(void *DS, int numOfModels, int *types, int *models);
 
 void Quit(void** DS);
-*/
+
 #ifdef __cplusplus
 }
 #endif
