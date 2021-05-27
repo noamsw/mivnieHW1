@@ -1951,8 +1951,10 @@ StatusType DSW::GetBestSellerModelByType(int typeID, int * modelID)
 // functions for getWorstModels
 // used to insert a Models info into arrays
 // updates the index
-void insertModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node)
+void insertModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* model_node, int numOfModels)
 {
+  if (*index == numOfModels)
+    return;
 	t_arr[*index]=model_node->data.type;
 	m_arr[*index]=model_node->data.model;
 	(*index)+=1;
@@ -1961,8 +1963,10 @@ void insertModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* 
 // a function used to insert a gradedmodels info
 // in the relevent index in the arrays
 // updates the index
-void insertGradedModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node)
+void insertGradedModelToArr(int* t_arr, int* m_arr, int* index, AVLTree<GradedModel>::Node* model_node, int numOfModels)
 {
+  if (*index == numOfModels)
+    return;
 	t_arr[*index]=model_node->data.type;
 	m_arr[*index]=model_node->data.model;
 	(*index)+=1;
@@ -1988,7 +1992,7 @@ AVLTree<GradedModel>::Node* inorderNegativeModel(int* t_arr, int* m_arr, int* in
 	// push only the negative graded models to the arrays
 	if (model_node->data.grade < 0)
 	{
-		insertGradedModelToArr(t_arr, m_arr, index, model_node);	
+		insertGradedModelToArr(t_arr, m_arr, index, model_node, numOfModels);	
 	}
 
 	// if the grade is not negative, we want to exit the recurrsion and keep the first positive node
@@ -2028,7 +2032,7 @@ AVLTree<GradedModel>::Node* inorderLowestNegativeModel(int* t_arr, int* m_arr, i
 	}	
 
 	// the node exist and its negative, add it to the arr 
-	insertGradedModelToArr(t_arr, m_arr, index, model_node);
+	insertGradedModelToArr(t_arr, m_arr, index, model_node, numOfModels);
 
 	// use inorder algorithm to check&insert the node's right sub-tree
 	first_positive_node = inorderNegativeModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels, first_positive_node);
@@ -2057,7 +2061,7 @@ void inorderZeroModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::Node* 
 	inorderZeroModel(t_arr, m_arr, index , model_node->getLeftChild(), numOfModels);
 
 	// insert node to the arrays
-	insertModelToArr(t_arr, m_arr, index, model_node);	
+	insertModelToArr(t_arr, m_arr, index, model_node, numOfModels);	
 
 	// recursive call to the right childs
 	inorderZeroModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
@@ -2075,7 +2079,7 @@ void inorderZeroLowestModel(int* t_arr, int* m_arr, int* index, AVLTree<Model>::
 	}
 
 	// the node exist insert to the arr 
-	insertModelToArr(t_arr, m_arr, index, model_node);
+	insertModelToArr(t_arr, m_arr, index, model_node, numOfModels);
 
 	// use inorder algorithm to check&insert the node's right sub-tree
 	inorderZeroModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
@@ -2135,7 +2139,7 @@ void inorderPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<GradedMode
 	inorderPositiveModel(t_arr, m_arr, index , model_node->getLeftChild(), numOfModels);
 
 	// insert graded model to the arrays
-	insertGradedModelToArr(t_arr, m_arr, index, model_node);	
+	insertGradedModelToArr(t_arr, m_arr, index, model_node, numOfModels);	
 
 	// recursive call for the right childs
 	inorderPositiveModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
@@ -2154,7 +2158,7 @@ void inorderLowestPositiveModel(int* t_arr, int* m_arr, int* index, AVLTree<Grad
 	}
 
 	// the node exist, and we havent filled the arrays, insert it 
-	insertGradedModelToArr(t_arr, m_arr, index, model_node);
+	insertGradedModelToArr(t_arr, m_arr, index, model_node, numOfModels);
 
 	// use inorder algorithm to check&insert the node's right sub-tree
 	inorderPositiveModel(t_arr, m_arr, index, model_node->getRightChild(), numOfModels);
@@ -2239,23 +2243,24 @@ int main()
 	  DSW cd;
 	  cd.addCarType(4,6);
 	  cd.addCarType(3,4);
-	
 	  cd.sellCar(3,0);
 	  cd.sellCar(3,0);
 	  cd.sellCar(3,0);
-	  cd.sellCar(3,0);
-	  cd.sellCar(3,0);
-	  cd.sellCar(4,0);
-	  cd.sellCar(4,0);
 	  cd.sellCar(3,1);
-	  cd.sellCar(3,2);
+	  cd.sellCar(4,0);
+	  cd.sellCar(4,1);
+	  cd.sellCar(4,2);
+	  cd.sellCar(4,3);
+	  cd.sellCar(4,4);
 	  cd.sellCar(3,3);
 	
-	  cd.MakeComplaint(3, 0, 2);
-	  cd.MakeComplaint(3, 0, 2);
+	  cd.MakeComplaint(3, 0, 1);
 	  cd.MakeComplaint(3, 1, 1);
-    std::cout << "zeros tree of 4" << std::endl;
+    std::cout << "zeros tree of 3" << std::endl;
     cd.zerostree->lowest->data.models->print();
+    std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
+    std::cout << "zeros tree of 4" << std::endl;
+    cd.zerostree->highest->data.models->print();
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
     cd.gradedmodels->print();
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
@@ -2270,5 +2275,4 @@ int main()
 	    std::cout << m_arr[i] << std::endl;
 	    std::cout << std::endl;
 	  }
-  return 0;
   }
