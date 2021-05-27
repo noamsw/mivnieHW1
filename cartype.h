@@ -25,15 +25,16 @@ public:
     int getBestSeller() const;
     // returns a pointer to the best seller
     AVLTree<Model>::Node* getMostSold();
-    // instantiate operator=
-    CarType& operator=(CarType& cartype);
     // comparing method between to cartypes
     // detertmined by typeid
     bool operator<(const CarType& cartype) const;
+    // instantiate operator=
+    CarType& operator=(CarType& cartype);
     bool operator>(const CarType& cartype) const;
     bool operator==(const CarType& cartype) const;
     bool addModel(int model_num, int grade, int numSold);
     bool removeModel(int model_num);
+    friend std::ostream& operator<<(std::ostream& os, const Model& car);
 };
 
 #endif

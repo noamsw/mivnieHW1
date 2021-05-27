@@ -1,5 +1,6 @@
 #include "model.h"
 #include "avl.h"
+
 //default constructor for model. all fields initialized to 0
 Model::Model():type(0), model(0), grade(0), numSold(0){};
 

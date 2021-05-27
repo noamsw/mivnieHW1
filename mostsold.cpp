@@ -105,7 +105,7 @@ bool MostSold::operator>(const MostSold& other) const
 
 std::ostream& operator<<(std::ostream& os, const MostSold& car)
 {
-    // os << car.type << "." << car.model << "." << car.numsold;
-    os << car.type ;
+    os << car.type << "." << car.model << "." << car.numsold;
+    //os << car.model ;
     return os;
 }
