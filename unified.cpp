@@ -603,6 +603,7 @@ bool AVLTree<T>::remove(const T& t) {
 						p->setRightChild(nullptr);
 					} 
 					delete toBeRemoved;
+          toBeRemoved = nullptr;
 					p->updateHeight();
 					balanceAtNode(p);
 				} 
@@ -649,6 +650,7 @@ bool AVLTree<T>::remove(const T& t) {
 					highest = toBeRemoved->getLeftChild();
 					setRoot(toBeRemoved->getLeftChild());
 					delete toBeRemoved;
+          toBeRemoved = nullptr;
 				}
 				// Otherwise, change the parent so it doesn't
 				// point to us, delete ourself, update the
@@ -750,6 +752,7 @@ bool AVLTree<T>::remove(const T& t) {
 			else
 				p->setRightChild(replacement);
 		delete toBeRemoved;
+    toBeRemoved = nullptr;
 		balanceAtNode(temp_node);
 	}
 	return true;
@@ -1360,13 +1363,15 @@ CarType::CarType(int type, int numOfModels):type(type)
 CarType::CarType(const CarType& cartype):type(cartype.type)
 {
     models = cartype.models;
+    // const_cast<CarType*>(&(cartype))->models = nullptr;
     best_seller = cartype.best_seller;
+    // const_cast<CarType*>(&(cartype))->best_seller = nullptr;
 }
 
 //destructor for CarType, must delete models
 CarType::~CarType()
 {
-    //delete models;
+    // delete models; this cause a segmentation fault. but we must delete it
 }
 // returns pointer to most sold model
 AVLTree<Model>::Node* CarType::getMostSold()
@@ -1586,6 +1591,9 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     try
     {
         (typestree->insert(*to_insert));
+        to_insert->models = nullptr;
+        to_insert->best_seller = nullptr;
+        delete to_insert;
     }
     catch(std::exception& e)
     {
@@ -1609,6 +1617,10 @@ StatusType DSW::addCarType(int typeId, int numOfModels)
     try
     {
         zerostree->insert(*zeroes_insert);
+        zeroes_insert->models = nullptr;
+        zeroes_insert->best_seller = nullptr;
+        delete zeroes_insert;
+        zeroes_insert = nullptr;
     }
     catch (std::exception& e)
     {
@@ -1706,14 +1718,17 @@ StatusType DSW::sellCar(int typeId, int modelId)
     }
     // check if this is now the best seller
     // if its a null pointer it was and remains best seller
+    Model model2_to_insert = Model(typeId, modelId, grade, sold);
     if(tree_of_models_to_update->data.best_seller == nullptr)
     {
         //update the bestsellers tree
         bestsellers->remove(MostSold(typeId,modelId,sold-1));
         bestsellers-> insert(MostSold(typeId,modelId,sold));
         //update the best seller in the tree of models
+        // here was the bug in valgrind
+        // i think you cant use the inserted node. 
         tree_of_models_to_update->data.best_seller 
-            = tree_of_models_to_update->data.models->findNode(model_to_insert);
+            = tree_of_models_to_update->data.models->findNode(model2_to_insert);
     }    
     // if it was not a null pointer than check
     // if the current model has now sold more models
@@ -1728,7 +1743,7 @@ StatusType DSW::sellCar(int typeId, int modelId)
             bestsellers-> insert(MostSold(typeId,modelId,sold));
             // update the tree of models best seller
             tree_of_models_to_update->data.best_seller 
-            = tree_of_models_to_update->data.models->findNode(model_to_insert);
+            = tree_of_models_to_update->data.models->findNode(model2_to_insert);
 
         } 
         // final case - equal
@@ -1744,7 +1759,7 @@ StatusType DSW::sellCar(int typeId, int modelId)
                 bestsellers-> insert(MostSold(typeId,modelId,sold));
                 // update the tree of models best seller
                 tree_of_models_to_update->data.best_seller 
-                = tree_of_models_to_update->data.models->findNode(model_to_insert);
+                = tree_of_models_to_update->data.models->findNode(model2_to_insert);
             }
         }
            
@@ -1778,7 +1793,9 @@ StatusType DSW::sellCar(int typeId, int modelId)
             {
               delete to_insert;
             }
-            
+            to_insert->models = nullptr;
+            to_insert->best_seller = nullptr;
+            delete to_insert;
           }   
           catch (std::exception& e)
           {
@@ -1938,6 +1955,9 @@ StatusType DSW::MakeComplaint(int typeID, int modelID, int t)
             delete to_insert;
           }
           zerostree->insert(*to_insert);
+          to_insert->models = nullptr;
+          to_insert->best_seller = nullptr;
+          delete to_insert;
         }
         catch(const std::exception& e)
         {
